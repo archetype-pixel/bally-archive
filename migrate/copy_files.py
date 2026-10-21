@@ -195,7 +195,7 @@ def copy_spin(rec):
     try:
         prefix = f"display/spins/{sid}"
         for n in range(24):
-            p = paths.get(str(n))
+            p = paths.get(str(n + 1)) or paths.get(str(n))  # matcher keys frames 1..24 (file suffix _001.._024)
             if not p:
                 raise RuntimeError(f"frame {n} missing")
             data = share.get_file_client(p).download_file().readall()
