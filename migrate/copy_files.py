@@ -18,6 +18,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from azure.storage.fileshare import ShareServiceClient
 from PIL import Image, ImageOps
+import requests
 from sbrest import Client as create_client
 
 Image.MAX_IMAGE_PIXELS = None  # large TIFF scans
@@ -101,43 +102,13 @@ def inventory():
     return len(stack) == 0
 
 
-# ---------- 2. match ----------
+# ---------- 2. match (done in the database: one statement, folder preference, retouched over raw) ----------
 def match():
-    q = sb.table("file_copy").select("asset_id,name").eq("status", "pending")
-    if SHARDS > 1:
-        q = q.eq("shard", SHARD)
-    pend = q.limit(100000).execute().data
-    if not pend:
-        return
-    log(f"matching {len(pend)} pending records")
-    names = sorted({p["name"] for p in pend if p["name"]})
-    found = {}
-    for i in range(0, len(names), 200):
-        chunk = names[i:i + 200]
-        res = sb.table("azure_files").select("path,name,size").in_("name", chunk).execute().data
-        for r in res:
-            found.setdefault(r["name"], []).append(r)
-    upd = 0
-    for p in pend:
-        cands = found.get(p["name"], [])
-        if not cands:
-            continue
-        # prefer heritage project folders, then any; note ambiguity
-        def rank(c):
-            p = c["path"]
-            stage = 0 if "/2. PostProcessed/" in p else (1 if "/1. Originali/" in p else 2)
-            for i, pref in enumerate(PREFER):
-                if p.startswith(pref + "/"):
-                    return (stage, i)
-            return (stage, len(PREFER))
-        cands.sort(key=rank)
-        best = cands[0]
-        note = "" if len(cands) == 1 else f"{len(cands)} candidates; chose by folder preference"
-        sb.table("file_copy").update({"azure_path": best["path"], "azure_size": best["size"],
-                                      "match_note": note, "status": "matched",
-                                      "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}).eq("asset_id", p["asset_id"]).execute()
-        upd += 1
-    log(f"matched {upd} of {len(pend)}")
+    try:
+        r = requests.post(f"{SB_URL}/rest/v1/rpc/match_pending_files", headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": "application/json"}, json={}, timeout=300)
+        log("matched", r.text.strip()[:40] if r.ok else f"rpc {r.status_code}")
+    except Exception as e:
+        log("match error", type(e).__name__)
 
 
 # ---------- 3. copy ----------
