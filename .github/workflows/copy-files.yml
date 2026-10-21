@@ -1,0 +1,32 @@
+name: Copy archive files (Azure Files -> Supabase Storage)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"   # every 6 hours; each run works for up to 5h40m then stops cleanly
+
+concurrency:
+  group: copy-files
+  cancel-in-progress: false
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r migrate/requirements.txt
+      - name: Copy files
+        env:
+          AZ_ACCOUNT: ballydigitalassets
+          AZ_SHARE: azuweubllssa
+          AZ_KEY: ${{ secrets.AZ_KEY }}
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RUN_SECONDS: "20400"
+          WORKERS: "4"
+          BUCKET: archive
+        run: python migrate/copy_files.py
