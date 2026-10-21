@@ -14,13 +14,17 @@ jobs:
   copy:
     runs-on: ubuntu-latest
     timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r migrate/requirements.txt
-      - name: Copy files
+      - name: Copy files (shard ${{ matrix.shard }} of 8)
         env:
           AZ_ACCOUNT: ballydigitalassets
           AZ_SHARE: azuweubllssa
@@ -28,6 +32,9 @@ jobs:
           SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           RUN_SECONDS: "20400"
-          WORKERS: "4"
+          WORKERS: "6"
           BUCKET: archive
+          SHARD: ${{ matrix.shard }}
+          SHARDS: "8"
+          DO_INVENTORY: ${{ matrix.shard == 0 && '1' || '0' }}
         run: python migrate/copy_files.py

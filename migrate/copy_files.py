@@ -30,6 +30,9 @@ SB_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 BUCKET = os.environ.get("BUCKET", "archive")
 RUN_SECONDS = int(os.environ.get("RUN_SECONDS", "20400"))
 WORKERS = int(os.environ.get("WORKERS", "4"))
+SHARD = int(os.environ.get("SHARD", "0"))
+SHARDS = int(os.environ.get("SHARDS", "1"))
+DO_INVENTORY = os.environ.get("DO_INVENTORY", "1") == "1"
 COPY_SLICE = int(os.environ.get("COPY_SLICE", "1800"))
 INVENTORY_SLICE = int(os.environ.get("INVENTORY_SLICE", "900"))  # seconds of listing per cycle before matching/copying
 ROOTS = [r for r in os.environ.get("AZ_ROOTS", "DAM").split(",") if r]
@@ -100,7 +103,10 @@ def inventory():
 
 # ---------- 2. match ----------
 def match():
-    pend = sb.table("file_copy").select("asset_id,name").eq("status", "pending").limit(100000).execute().data
+    q = sb.table("file_copy").select("asset_id,name").eq("status", "pending")
+    if SHARDS > 1:
+        q = q.eq("shard", SHARD)
+    pend = q.limit(100000).execute().data
     if not pend:
         return
     log(f"matching {len(pend)} pending records")
@@ -188,8 +194,10 @@ def copy_all(max_seconds=None):
     n = 0
     stop_at = time.time() + (max_seconds or 10**9)
     while time_left() > 300 and time.time() < stop_at:
-        batch = sb.table("file_copy").select("asset_id,guid,name,azure_path").eq("status", "matched") \
-            .order("asset_id").limit(WORKERS * 5).execute().data
+        q = sb.table("file_copy").select("asset_id,guid,name,azure_path").eq("status", "matched")
+        if SHARDS > 1:
+            q = q.eq("shard", SHARD)
+        batch = q.order("asset_id").limit(WORKERS * 5).execute().data
         if not batch:
             log("nothing left to copy")
             break
@@ -203,14 +211,23 @@ def copy_all(max_seconds=None):
 
 if __name__ == "__main__":
     try:
-        complete = False
+        complete = not DO_INVENTORY
+        idle = 0
         while time_left() > 600:
-            if not complete:
+            if DO_INVENTORY and not complete:
                 complete = inventory()
             match()
-            n = copy_all(max_seconds=None if complete else COPY_SLICE)
-            if complete and n == 0:
-                break
+            n = copy_all(max_seconds=None if (complete and DO_INVENTORY) else COPY_SLICE)
+            if n == 0:
+                idle += 1
+                if DO_INVENTORY and complete:
+                    break
+                if idle > 40:
+                    log("nothing to do for a long while; ending run")
+                    break
+                time.sleep(90)
+            else:
+                idle = 0
         log("run finished")
     except Exception:
         traceback.print_exc()
