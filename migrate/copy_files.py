@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from azure.storage.fileshare import ShareServiceClient
 from PIL import Image, ImageOps
-from supabase import create_client
+from sbrest import Client as create_client
 
 Image.MAX_IMAGE_PIXELS = None  # large TIFF scans
 
@@ -114,7 +114,7 @@ def match():
         note = "" if len(cands) == 1 else f"{len(cands)} candidates; chose by folder preference"
         sb.table("file_copy").update({"azure_path": best["path"], "azure_size": best["size"],
                                       "match_note": note, "status": "matched",
-                                      "updated_at": "now()"}).eq("asset_id", p["asset_id"]).execute()
+                                      "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}).eq("asset_id", p["asset_id"]).execute()
         upd += 1
     log(f"matched {upd} of {len(pend)}")
 
@@ -159,11 +159,11 @@ def copy_one(rec):
             log("derivative failed", aid, type(e).__name__)
         sb.table("file_copy").update({"status": "copied", "dest_original": base, "dest_display": disp,
                                       "dest_thumb": thumb, "width": w, "height": h, "error": None,
-                                      "updated_at": "now()"}).eq("asset_id", aid).execute()
+                                      "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}).eq("asset_id", aid).execute()
         return len(data)
     except Exception as e:
         sb.table("file_copy").update({"status": "error", "error": str(e)[:500],
-                                      "updated_at": "now()"}).eq("asset_id", aid).execute()
+                                      "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}).eq("asset_id", aid).execute()
         log("copy error", aid, type(e).__name__)
         return 0
 
@@ -192,7 +192,6 @@ if __name__ == "__main__":
         if not complete:
             log("inventory not complete yet; copying what is matched so far")
         copy_all()
-        st = sb.rpc("file_copy_summary").execute().data if False else None
         log("run finished")
     except Exception:
         traceback.print_exc()
