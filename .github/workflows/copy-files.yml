@@ -2,8 +2,9 @@ name: Copy archive files (Azure Files -> Supabase Storage)
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "17 */6 * * *"   # every 6 hours; each run works for up to 5h40m then stops cleanly
+  # To run unattended every 6 hours, add under "on:":
+  #   schedule:
+  #     - cron: "17 */6 * * *"
 
 concurrency:
   group: copy-files
