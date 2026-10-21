@@ -63,7 +63,7 @@ def inventory():
         try:
             items = list(share.get_directory_client(d).list_directories_and_files())
         except Exception as e:
-            log("inventory error", d, e)
+            log("inventory error", "<dir>", type(e).__name__)
             continue
         rows = []
         for it in items:
@@ -80,7 +80,7 @@ def inventory():
         done.add(d)
         n += len(rows)
         if n and n % 2000 < len(rows):
-            log(f"inventory: {n} files this run, {len(stack)} dirs queued, at {d}")
+            log(f"inventory: {n} files this run, {len(stack)} dirs queued")
     log(f"inventory pass done: {n} files added, {len(stack)} dirs still queued")
     return len(stack) == 0
 
@@ -156,7 +156,7 @@ def copy_one(rec):
                 sb.storage.from_(BUCKET).upload(disp, d, {"content-type": "image/jpeg", "upsert": "true"})
                 sb.storage.from_(BUCKET).upload(thumb, t, {"content-type": "image/jpeg", "upsert": "true"})
         except Exception as e:
-            log("derivative failed", name, e)
+            log("derivative failed", aid, type(e).__name__)
         sb.table("file_copy").update({"status": "copied", "dest_original": base, "dest_display": disp,
                                       "dest_thumb": thumb, "width": w, "height": h, "error": None,
                                       "updated_at": "now()"}).eq("asset_id", aid).execute()
@@ -164,7 +164,7 @@ def copy_one(rec):
     except Exception as e:
         sb.table("file_copy").update({"status": "error", "error": str(e)[:500],
                                       "updated_at": "now()"}).eq("asset_id", aid).execute()
-        log("copy error", name, e)
+        log("copy error", aid, type(e).__name__)
         return 0
 
 
