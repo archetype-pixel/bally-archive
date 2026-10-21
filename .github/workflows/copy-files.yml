@@ -36,5 +36,5 @@ jobs:
           BUCKET: archive
           SHARD: ${{ matrix.shard }}
           SHARDS: "8"
-          DO_INVENTORY: ${{ matrix.shard == 0 && '1' || '0' }}
+          DO_INVENTORY: "1"
         run: python migrate/copy_files.py

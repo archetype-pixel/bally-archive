@@ -14,6 +14,7 @@ import os
 import sys
 import time
 import traceback
+import zlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from azure.storage.fileshare import ShareServiceClient
@@ -64,9 +65,10 @@ def inventory():
         stack += [r["dir"] for r in sb.table("azure_dirs_pending").select("dir").limit(100000).execute().data if r["dir"] not in done and not r["dir"].startswith(SKIP_DIRS)]
     except Exception as e:
         log("no pending dir queue yet", type(e).__name__)
-    stack = list(dict.fromkeys(stack))
-    # re-queue subdirs of done dirs that are themselves not done
-    known_dirs = {r["dir"] for r in sb.table("azure_files").select("dir").limit(200000).execute().data}
+    # every shard lists its own slice of the queue (by hash of the path); dirs found for other shards go to the shared queue
+    mine = lambda d: SHARDS == 1 or (zlib.crc32(d.encode()) % SHARDS) == SHARD
+    foreign = []
+    stack = [d for d in dict.fromkeys(stack) if mine(d) or d in ROOTS]
     n = 0
     budget = time.time() + INVENTORY_SLICE
     while stack and time_left() > 600 and time.time() < budget:
@@ -82,7 +84,7 @@ def inventory():
             if it["is_directory"]:
                 sub = f"{d}/{it['name']}"
                 if sub not in done and not sub.startswith(SKIP_DIRS):
-                    stack.append(sub)
+                    (stack if mine(sub) else foreign).append(sub)
             elif not already:
                 rows.append({"path": f"{d}/{it['name']}", "dir": d, "name": it["name"], "size": it.get("size")})
         if rows:
@@ -96,10 +98,10 @@ def inventory():
             log(f"inventory: {n} files this run, {len(stack)} dirs queued")
     log(f"inventory slice done: {n} files added, {len(stack)} dirs still queued")
     # persist the remaining queue so the next cycle/run continues from here
-    pend = [{"dir": x} for x in stack]
+    pend = [{"dir": x} for x in dict.fromkeys(stack + foreign)]
     for i in range(0, len(pend), 500):
         sb.table("azure_dirs_pending").upsert(pend[i:i + 500]).execute()
-    return len(stack) == 0
+    return len(stack) == 0 and not foreign
 
 
 # ---------- 2. match (done in the database: one statement, folder preference, retouched over raw) ----------
@@ -247,8 +249,6 @@ if __name__ == "__main__":
             n += copy_spins(max_seconds=COPY_SLICE // 2)
             if n == 0:
                 idle += 1
-                if DO_INVENTORY and complete:
-                    break
                 if idle > 40:
                     log("nothing to do for a long while; ending run")
                     break
