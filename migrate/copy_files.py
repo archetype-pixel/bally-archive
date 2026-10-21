@@ -180,6 +180,60 @@ def copy_all(max_seconds=None):
     return n
 
 
+# ---------- 4. 360 spins (24 frames each, from the share) ----------
+def match_spins():
+    try:
+        r = requests.post(f"{SB_URL}/rest/v1/rpc/match_pending_spins", headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": "application/json"}, json={}, timeout=300)
+        log("spins matched", r.text.strip()[:40] if r.ok else f"rpc {r.status_code}")
+    except Exception as e:
+        log("spin match error", type(e).__name__)
+
+
+def copy_spin(rec):
+    sid, paths = rec["session_id"], rec["frame_paths"] or {}
+    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    try:
+        prefix = f"display/spins/{sid}"
+        for n in range(24):
+            p = paths.get(str(n))
+            if not p:
+                raise RuntimeError(f"frame {n} missing")
+            data = share.get_file_client(p).download_file().readall()
+            ext = os.path.splitext(p)[1].lower() or ".jpg"
+            sb.storage.from_(BUCKET).upload(f"originals/spins/{sid}/{n:02d}{ext}", data, {"content-type": "image/jpeg"})
+            im = ImageOps.exif_transpose(Image.open(io.BytesIO(data)))
+            if im.mode not in ("RGB", "L"):
+                im = im.convert("RGB")
+            im.thumbnail((1000, 1000))
+            b = io.BytesIO()
+            im.save(b, "JPEG", quality=85, optimize=True)
+            sb.storage.from_(BUCKET).upload(f"{prefix}/{n}.jpg", b.getvalue(), {"content-type": "image/jpeg"})
+        sb.table("spin_copy").update({"status": "copied", "dest_prefix": prefix, "error": None, "updated_at": now}).eq("session_id", sid).execute()
+        sb.table("spins").update({"storage_prefix": prefix}).eq("session_id", sid).execute()
+        return 1
+    except Exception as e:
+        sb.table("spin_copy").update({"status": "error", "error": str(e)[:300], "updated_at": now}).eq("session_id", sid).execute()
+        log("spin error", sid, type(e).__name__)
+        return 0
+
+
+def copy_spins(max_seconds):
+    n = 0
+    stop_at = time.time() + max_seconds
+    while time_left() > 300 and time.time() < stop_at:
+        q = sb.table("spin_copy").select("session_id,frame_paths").eq("status", "matched")
+        if SHARDS > 1:
+            q = q.eq("shard", SHARD)
+        batch = q.order("session_id").limit(WORKERS).execute().data
+        if not batch:
+            break
+        with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+            for fut in as_completed([ex.submit(copy_spin, r) for r in batch]):
+                n += fut.result()
+        log(f"spins copied this run: {n}")
+    return n
+
+
 if __name__ == "__main__":
     try:
         complete = not DO_INVENTORY
@@ -188,7 +242,9 @@ if __name__ == "__main__":
             if DO_INVENTORY and not complete:
                 complete = inventory()
             match()
-            n = copy_all(max_seconds=None if (complete and DO_INVENTORY) else COPY_SLICE)
+            match_spins()
+            n = copy_all(max_seconds=COPY_SLICE)
+            n += copy_spins(max_seconds=COPY_SLICE // 2)
             if n == 0:
                 idle += 1
                 if DO_INVENTORY and complete:

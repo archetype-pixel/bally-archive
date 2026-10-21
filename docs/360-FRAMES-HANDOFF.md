@@ -25,7 +25,13 @@ once `spins.storage_prefix = 'display/spins/<session_id>'` is set.
 For each finished spin: upload the 24 display frames, then `update spins set storage_prefix='display/spins/<session_id>' where session_id=<id>`.
 Keep a manifest per spin (tile checksums, source URLs) under `originals/spins/<session_id>/manifest.json`.
 
+## Update (frames found on the Azure share)
+The 24 frames per spin exist on the share as `<INV>_<SN>_000.jpg ... _023.jpg` next to the object's shoot folders.
+`migrate/copy_files.py` now matches them (table `azure_frames` + `spin_copy`, function `match_pending_spins()`) and copies
+them per shard into `display/spins/<session_id>/0..23.jpg` (1000px) and `originals/spins/<session_id>/00..23.jpg`.
+The CDN tile route below is only a fallback for spins whose frames are missing from the share.
+
 ## Notes
-- Spin folders are NOT on the Azure Files share (checked: no `HSL360` paths). The CDN is the only source.
+- Spin folders with `HSL360` names are not on the share; the plain frame files are.
 - 7 spins belong to objects whose admin card lists no inventory number; recover them anyway, they are linked by object_guid.
 - Rate: be polite to the CDN; a few spins per second is plenty. 11,894 spins x 384 tiles is ~4.6M requests.
