@@ -30,8 +30,11 @@ SB_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 BUCKET = os.environ.get("BUCKET", "archive")
 RUN_SECONDS = int(os.environ.get("RUN_SECONDS", "20400"))
 WORKERS = int(os.environ.get("WORKERS", "4"))
+COPY_SLICE = int(os.environ.get("COPY_SLICE", "1800"))
+INVENTORY_SLICE = int(os.environ.get("INVENTORY_SLICE", "900"))  # seconds of listing per cycle before matching/copying
 ROOTS = [r for r in os.environ.get("AZ_ROOTS", "DAM").split(",") if r]
 PREFER = ["DAM/PRJ/HERITAGE", "DAM/PRJ", "DAM/Shots", "DAM/Shot_Export", "DAM/Products", "DAM/MOVIES"]
+SKIP_DIRS = tuple(os.environ.get("AZ_SKIP", "DAM/xHOTFOLDERS,DAM/xHOTFOLDERS.old,DAM/xHOTFOLDERS.old2,DAM/ImpExp_Temp,DAM/EXPORT_TEMP,DAM/Trash,DAM/xPROJECTS,DAM/xCOVERS,DAM/APS").split(","))
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp", ".gif", ".webp"}
 
 T0 = time.time()
@@ -53,13 +56,18 @@ def time_left():
 def inventory():
     done = {r["dir"] for r in sb.table("azure_dirs_done").select("dir").limit(100000).execute().data}
     stack = [r for r in ROOTS if r not in done]
+    try:
+        stack += [r["dir"] for r in sb.table("azure_dirs_pending").select("dir").limit(100000).execute().data if r["dir"] not in done and not r["dir"].startswith(SKIP_DIRS)]
+    except Exception as e:
+        log("no pending dir queue yet", type(e).__name__)
+    stack = list(dict.fromkeys(stack))
     # re-queue subdirs of done dirs that are themselves not done
     known_dirs = {r["dir"] for r in sb.table("azure_files").select("dir").limit(200000).execute().data}
     n = 0
-    while stack and time_left() > 600:
+    budget = time.time() + INVENTORY_SLICE
+    while stack and time_left() > 600 and time.time() < budget:
         d = stack.pop()
-        if d in done:
-            continue
+        already = d in done
         try:
             items = list(share.get_directory_client(d).list_directories_and_files())
         except Exception as e:
@@ -69,19 +77,24 @@ def inventory():
         for it in items:
             if it["is_directory"]:
                 sub = f"{d}/{it['name']}"
-                if sub not in done:
+                if sub not in done and not sub.startswith(SKIP_DIRS):
                     stack.append(sub)
-            else:
+            elif not already:
                 rows.append({"path": f"{d}/{it['name']}", "dir": d, "name": it["name"], "size": it.get("size")})
         if rows:
             for i in range(0, len(rows), 500):
                 sb.table("azure_files").upsert(rows[i:i + 500]).execute()
-        sb.table("azure_dirs_done").upsert({"dir": d}).execute()
-        done.add(d)
+        if not already:
+            sb.table("azure_dirs_done").upsert({"dir": d}).execute()
+            done.add(d)
         n += len(rows)
         if n and n % 2000 < len(rows):
             log(f"inventory: {n} files this run, {len(stack)} dirs queued")
-    log(f"inventory pass done: {n} files added, {len(stack)} dirs still queued")
+    log(f"inventory slice done: {n} files added, {len(stack)} dirs still queued")
+    # persist the remaining queue so the next cycle/run continues from here
+    pend = [{"dir": x} for x in stack]
+    for i in range(0, len(pend), 500):
+        sb.table("azure_dirs_pending").upsert(pend[i:i + 500]).execute()
     return len(stack) == 0
 
 
@@ -105,10 +118,12 @@ def match():
             continue
         # prefer heritage project folders, then any; note ambiguity
         def rank(c):
+            p = c["path"]
+            stage = 0 if "/2. PostProcessed/" in p else (1 if "/1. Originali/" in p else 2)
             for i, pref in enumerate(PREFER):
-                if c["path"].startswith(pref + "/"):
-                    return i
-            return len(PREFER)
+                if p.startswith(pref + "/"):
+                    return (stage, i)
+            return (stage, len(PREFER))
         cands.sort(key=rank)
         best = cands[0]
         note = "" if len(cands) == 1 else f"{len(cands)} candidates; chose by folder preference"
@@ -168,10 +183,11 @@ def copy_one(rec):
         return 0
 
 
-def copy_all():
+def copy_all(max_seconds=None):
     total = 0
     n = 0
-    while time_left() > 300:
+    stop_at = time.time() + (max_seconds or 10**9)
+    while time_left() > 300 and time.time() < stop_at:
         batch = sb.table("file_copy").select("asset_id,guid,name,azure_path").eq("status", "matched") \
             .order("asset_id").limit(WORKERS * 5).execute().data
         if not batch:
@@ -187,11 +203,14 @@ def copy_all():
 
 if __name__ == "__main__":
     try:
-        complete = inventory()
-        match()
-        if not complete:
-            log("inventory not complete yet; copying what is matched so far")
-        copy_all()
+        complete = False
+        while time_left() > 600:
+            if not complete:
+                complete = inventory()
+            match()
+            n = copy_all(max_seconds=None if complete else COPY_SLICE)
+            if complete and n == 0:
+                break
         log("run finished")
     except Exception:
         traceback.print_exc()
