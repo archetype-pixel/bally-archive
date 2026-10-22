@@ -36,6 +36,8 @@ def rpc(name, body):
 
 def one(rec):
     guid, orig = rec["guid"], rec["dest_original"]
+    dest = rec.get("dest") or f"zoom/{guid}.jpg"   # spin frames pass an explicit dest like zoom/spins/<sid>/<n>.jpg
+    px = int(rec.get("px") or ZOOM_PX)
     try:
         r = requests.get(f"{SB_URL}/storage/v1/object/archive/{orig}", headers=H, timeout=600)
         if r.status_code != 200:
@@ -43,12 +45,12 @@ def one(rec):
         im = ImageOps.exif_transpose(Image.open(io.BytesIO(r.content)))
         if im.mode not in ("RGB", "L"):
             im = im.convert("RGB")
-        if max(im.size) <= 1600:
+        if max(im.size) <= 1600 and not rec.get("dest"):
             return guid, "small"  # display copy already shows it at full size
-        im.thumbnail((ZOOM_PX, ZOOM_PX))
+        im.thumbnail((px, px))
         b = io.BytesIO()
         im.save(b, "JPEG", quality=85, optimize=True, progressive=True)
-        u = requests.post(f"{SB_URL}/storage/v1/object/web/zoom/{guid}.jpg", data=b.getvalue(), timeout=600,
+        u = requests.post(f"{SB_URL}/storage/v1/object/web/{dest}", data=b.getvalue(), timeout=600,
                           headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": "image/jpeg", "x-upsert": "true"})
         return guid, "copied" if u.status_code in (200, 201) else f"upload {u.status_code}"
     except Exception as e:
