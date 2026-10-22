@@ -49,6 +49,30 @@ class Query:
         h = {"apikey": self.key, "Authorization": f"Bearer {self.key}", "Content-Type": "application/json"}
         if self._prefer:
             h["Prefer"] = self._prefer
+        res = type("R", (), {})()
+        res.data = []
+        if self._method != "GET":
+            self._request(url, params, h)
+            return res
+        # PostgREST caps a single response at 1000 rows: page with Range until we have `limit` rows
+        want = int(params.pop("limit", 1000))
+        if want > 1000 and "order" not in params and params.get("select", "*") != "*":
+            params["order"] = params["select"].split(",")[0]  # stable paging order
+        page = 1000
+        offset = 0
+        while offset < want:
+            hp = dict(h)
+            hp["Range-Unit"] = "items"
+            hp["Range"] = f"{offset}-{offset + min(page, want - offset) - 1}"
+            r = self._request(url, params, hp)
+            rows = r.json() if r.text else []
+            res.data.extend(rows)
+            if len(rows) < min(page, want - offset):
+                break
+            offset += len(rows)
+        return res
+
+    def _request(self, url, params, h):
         for attempt in range(4):
             try:
                 r = requests.request(self._method, url, params=params, json=self._body, headers=h, timeout=120)
@@ -56,9 +80,7 @@ class Query:
                     raise RuntimeError(f"{r.status_code} {r.text[:200]}")
                 if r.status_code >= 400:
                     raise ValueError(f"{r.status_code} {r.text[:300]}")
-                res = type("R", (), {})()
-                res.data = r.json() if self._method == "GET" and r.text else []
-                return res
+                return r
             except (requests.RequestException, RuntimeError):
                 if attempt == 3:
                     raise
