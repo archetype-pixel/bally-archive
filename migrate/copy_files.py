@@ -29,7 +29,8 @@ AZ_SHARE = os.environ["AZ_SHARE"]
 AZ_KEY = os.environ["AZ_KEY"]
 SB_URL = os.environ["SUPABASE_URL"]
 SB_KEY = os.environ["SUPABASE_SERVICE_KEY"]
-BUCKET = os.environ.get("BUCKET", "archive")
+BUCKET = os.environ.get("BUCKET", "archive")        # originals (private)
+WEB = os.environ.get("WEB_BUCKET", "web")             # display/thumb/spin frames (public)
 RUN_SECONDS = int(os.environ.get("RUN_SECONDS", "20400"))
 WORKERS = int(os.environ.get("WORKERS", "4"))
 SHARD = int(os.environ.get("SHARD", "0"))
@@ -187,8 +188,8 @@ def copy_one(rec):
             if d:
                 disp = f"display/{guid}.jpg"
                 thumb = f"thumb/{guid}.jpg"
-                sb.storage.from_(BUCKET).upload(disp, d, {"content-type": "image/jpeg", "upsert": "true"})
-                sb.storage.from_(BUCKET).upload(thumb, t, {"content-type": "image/jpeg", "upsert": "true"})
+                sb.storage.from_(WEB).upload(disp, d, {"content-type": "image/jpeg", "upsert": "true"})
+                sb.storage.from_(WEB).upload(thumb, t, {"content-type": "image/jpeg", "upsert": "true"})
         except Exception as e:
             log("derivative failed", aid, type(e).__name__)
         status, err = "copied", None
@@ -257,7 +258,7 @@ def copy_spin(rec):
             im.thumbnail((1000, 1000))
             b = io.BytesIO()
             im.save(b, "JPEG", quality=85, optimize=True)
-            sb.storage.from_(BUCKET).upload(f"{prefix}/{n}.jpg", b.getvalue(), {"content-type": "image/jpeg"})
+            sb.storage.from_(WEB).upload(f"{prefix}/{n}.jpg", b.getvalue(), {"content-type": "image/jpeg"})
         sb.table("spin_copy").update({"status": "copied", "dest_prefix": prefix, "error": None, "updated_at": now}).eq("session_id", sid).execute()
         sb.table("spins").update({"storage_prefix": prefix}).eq("session_id", sid).execute()
         return 1
