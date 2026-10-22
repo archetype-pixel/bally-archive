@@ -36,7 +36,7 @@ SHARD = int(os.environ.get("SHARD", "0"))
 SHARDS = int(os.environ.get("SHARDS", "1"))
 DO_INVENTORY = os.environ.get("DO_INVENTORY", "1") == "1"
 COPY_SLICE = int(os.environ.get("COPY_SLICE", "1800"))
-INVENTORY_SLICE = int(os.environ.get("INVENTORY_SLICE", "900"))  # seconds of listing per cycle before matching/copying
+INVENTORY_SLICE = int(os.environ.get("INVENTORY_SLICE", "1500"))  # seconds of listing per cycle before matching/copying
 ROOTS = [r for r in os.environ.get("AZ_ROOTS", "DAM").split(",") if r]
 PREFER = ["DAM/PRJ/HERITAGE", "DAM/PRJ", "DAM/Shots", "DAM/Shot_Export", "DAM/Products", "DAM/MOVIES"]
 SKIP_DIRS = tuple(os.environ.get("AZ_SKIP", "DAM/xHOTFOLDERS,DAM/xHOTFOLDERS.old,DAM/xHOTFOLDERS.old2,DAM/ImpExp_Temp,DAM/EXPORT_TEMP,DAM/Trash,DAM/xPROJECTS,DAM/xCOVERS,DAM/APS").split(","))
@@ -79,8 +79,32 @@ def inventory():
             log("inventory error", "<dir>", type(e).__name__)
             return d, None
 
+    def flush_foreign():
+        pend = [{"dir": x} for x in dict.fromkeys(foreign)]
+        for i in range(0, len(pend), 500):
+            sb.table("azure_dirs_pending").upsert(pend[i:i + 500]).execute()
+        foreign.clear()
+
+    def refill():
+        # hand over what we found for other shards, pick up what they found for us
+        flush_foreign()
+        fresh = [r["dir"] for r in sb.table("azure_dirs_pending").select("dir").limit(100000).execute().data]
+        return [d for d in dict.fromkeys(fresh) if mine(d) and d not in done and not d.startswith(SKIP_DIRS)]
+
+    waits = 0
     with ThreadPoolExecutor(max_workers=WORKERS * 2) as ex:
-        while stack and time_left() > 600 and time.time() < budget:
+        while time_left() > 600 and time.time() < budget:
+            if not stack:
+                stack = refill()
+                if not stack:
+                    waits += 1
+                    if waits > 6:
+                        break
+                    time.sleep(20)
+                    continue
+                waits = 0
+            if len(foreign) > 200:
+                flush_foreign()
             batch = [stack.pop() for _ in range(min(WORKERS * 2, len(stack)))]
             rows, finished = [], []
             for d, items in ex.map(list_dir, batch):
@@ -106,10 +130,9 @@ def inventory():
                 log(f"inventory: {n} files this run, {len(stack)} dirs queued")
     log(f"inventory slice done: {n} files added, {len(stack)} dirs still queued")
     # persist the remaining queue so the next cycle/run continues from here
-    pend = [{"dir": x} for x in dict.fromkeys(stack + foreign)]
-    for i in range(0, len(pend), 500):
-        sb.table("azure_dirs_pending").upsert(pend[i:i + 500]).execute()
-    return len(stack) == 0 and not foreign
+    foreign.extend(stack)
+    flush_foreign()
+    return len(stack) == 0 and waits > 6
 
 
 # ---------- 2. match (done in the database: one statement, folder preference, retouched over raw) ----------
