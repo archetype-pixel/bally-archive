@@ -71,31 +71,39 @@ def inventory():
     stack = [d for d in dict.fromkeys(stack) if mine(d) or d in ROOTS]
     n = 0
     budget = time.time() + INVENTORY_SLICE
-    while stack and time_left() > 600 and time.time() < budget:
-        d = stack.pop()
-        already = d in done
+
+    def list_dir(d):
         try:
-            items = list(share.get_directory_client(d).list_directories_and_files())
+            return d, list(share.get_directory_client(d).list_directories_and_files())
         except Exception as e:
             log("inventory error", "<dir>", type(e).__name__)
-            continue
-        rows = []
-        for it in items:
-            if it["is_directory"]:
-                sub = f"{d}/{it['name']}"
-                if sub not in done and not sub.startswith(SKIP_DIRS):
-                    (stack if mine(sub) else foreign).append(sub)
-            elif not already:
-                rows.append({"path": f"{d}/{it['name']}", "dir": d, "name": it["name"], "size": it.get("size")})
-        if rows:
+            return d, None
+
+    with ThreadPoolExecutor(max_workers=WORKERS * 2) as ex:
+        while stack and time_left() > 600 and time.time() < budget:
+            batch = [stack.pop() for _ in range(min(WORKERS * 2, len(stack)))]
+            rows, finished = [], []
+            for d, items in ex.map(list_dir, batch):
+                if items is None:
+                    continue
+                already = d in done
+                for it in items:
+                    if it["is_directory"]:
+                        sub = f"{d}/{it['name']}"
+                        if sub not in done and not sub.startswith(SKIP_DIRS):
+                            (stack if mine(sub) else foreign).append(sub)
+                    elif not already:
+                        rows.append({"path": f"{d}/{it['name']}", "dir": d, "name": it["name"], "size": it.get("size")})
+                if not already:
+                    finished.append(d)
             for i in range(0, len(rows), 500):
                 sb.table("azure_files").upsert(rows[i:i + 500]).execute()
-        if not already:
-            sb.table("azure_dirs_done").upsert({"dir": d}).execute()
-            done.add(d)
-        n += len(rows)
-        if n and n % 2000 < len(rows):
-            log(f"inventory: {n} files this run, {len(stack)} dirs queued")
+            if finished:
+                sb.table("azure_dirs_done").upsert([{"dir": d} for d in finished]).execute()
+                done.update(finished)
+            n += len(rows)
+            if n and n % 2000 < len(rows):
+                log(f"inventory: {n} files this run, {len(stack)} dirs queued")
     log(f"inventory slice done: {n} files added, {len(stack)} dirs still queued")
     # persist the remaining queue so the next cycle/run continues from here
     pend = [{"dir": x} for x in dict.fromkeys(stack + foreign)]
