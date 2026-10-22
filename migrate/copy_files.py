@@ -34,6 +34,9 @@ RUN_SECONDS = int(os.environ.get("RUN_SECONDS", "20400"))
 WORKERS = int(os.environ.get("WORKERS", "4"))
 SHARD = int(os.environ.get("SHARD", "0"))
 SHARDS = int(os.environ.get("SHARDS", "1"))
+DB_SHARDS = 8  # file_copy.shard / spin_copy.shard are computed as key % 8; jobs beyond 8 pair up and work from the other end
+DB_SHARD = SHARD % DB_SHARDS
+ORDER_SUFFIX = "" if SHARD < DB_SHARDS else ".desc"
 DO_INVENTORY = os.environ.get("DO_INVENTORY", "1") == "1"
 COPY_SLICE = int(os.environ.get("COPY_SLICE", "1800"))
 INVENTORY_SLICE = int(os.environ.get("INVENTORY_SLICE", "1500"))  # seconds of listing per cycle before matching/copying
@@ -58,11 +61,18 @@ def time_left():
 
 
 # ---------- 1. inventory ----------
+def pending_dirs():
+    """Folders queued but not yet listed (the database does the anti-join; the queue keeps finished rows too)."""
+    r = requests.post(f"{SB_URL}/rest/v1/rpc/pending_dirs_json", headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": "application/json", "Prefer": "count=none"}, json={}, timeout=300)
+    r.raise_for_status()
+    return list(r.json())
+
+
 def inventory():
     done = {r["dir"] for r in sb.table("azure_dirs_done").select("dir").limit(100000).execute().data}
     stack = [r for r in ROOTS if r not in done]
     try:
-        stack += [r["dir"] for r in sb.table("azure_dirs_pending").select("dir").limit(100000).execute().data if r["dir"] not in done and not r["dir"].startswith(SKIP_DIRS)]
+        stack += [d for d in pending_dirs() if d not in done and not d.startswith(SKIP_DIRS)]
     except Exception as e:
         log("no pending dir queue yet", type(e).__name__)
     # every shard lists its own slice of the queue (by hash of the path); dirs found for other shards go to the shared queue
@@ -88,7 +98,7 @@ def inventory():
     def refill():
         # hand over what we found for other shards, pick up what they found for us
         flush_foreign()
-        fresh = [r["dir"] for r in sb.table("azure_dirs_pending").select("dir").limit(100000).execute().data]
+        fresh = pending_dirs()
         return [d for d in dict.fromkeys(fresh) if mine(d) and d not in done and not d.startswith(SKIP_DIRS)]
 
     waits = 0
@@ -207,8 +217,8 @@ def copy_all(max_seconds=None):
     while time_left() > 300 and time.time() < stop_at:
         q = sb.table("file_copy").select("asset_id,guid,name,azure_path").eq("status", "matched")
         if SHARDS > 1:
-            q = q.eq("shard", SHARD)
-        batch = q.order("asset_id").limit(WORKERS * 5).execute().data
+            q = q.eq("shard", DB_SHARD)
+        batch = q.order("asset_id" + ORDER_SUFFIX).limit(WORKERS * 5).execute().data
         if not batch:
             log("nothing left to copy")
             break
@@ -263,8 +273,8 @@ def copy_spins(max_seconds):
     while time_left() > 300 and time.time() < stop_at:
         q = sb.table("spin_copy").select("session_id,frame_paths").eq("status", "matched")
         if SHARDS > 1:
-            q = q.eq("shard", SHARD)
-        batch = q.order("session_id").limit(WORKERS).execute().data
+            q = q.eq("shard", DB_SHARD)
+        batch = q.order("session_id" + ORDER_SUFFIX).limit(WORKERS).execute().data
         if not batch:
             break
         with ThreadPoolExecutor(max_workers=WORKERS) as ex:
