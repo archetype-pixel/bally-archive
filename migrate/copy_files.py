@@ -170,7 +170,6 @@ def copy_one(rec):
         f = share.get_file_client(path)
         data = f.download_file().readall()
         base = f"originals/{guid}/{name}"
-        sb.storage.from_(BUCKET).upload(base, data, {"content-type": "application/octet-stream", "upsert": "true"})
         disp = thumb = None
         w = h = None
         try:
@@ -182,8 +181,16 @@ def copy_one(rec):
                 sb.storage.from_(BUCKET).upload(thumb, t, {"content-type": "image/jpeg", "upsert": "true"})
         except Exception as e:
             log("derivative failed", aid, type(e).__name__)
-        sb.table("file_copy").update({"status": "copied", "dest_original": base, "dest_display": disp,
-                                      "dest_thumb": thumb, "width": w, "height": h, "error": None,
+        status, err = "copied", None
+        try:
+            sb.storage.from_(BUCKET).upload(base, data, {"content-type": "application/octet-stream", "upsert": "true"})
+        except ValueError as e:
+            if "413" in str(e) or "too large" in str(e).lower():
+                status, err, base = "too_large", f"original {len(data) / 1e6:.0f} MB exceeds storage upload limit", None
+            else:
+                raise
+        sb.table("file_copy").update({"status": status, "dest_original": base, "dest_display": disp,
+                                      "dest_thumb": thumb, "width": w, "height": h, "error": err,
                                       "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}).eq("asset_id", aid).execute()
         return len(data)
     except Exception as e:
