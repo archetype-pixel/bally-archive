@@ -28,15 +28,15 @@ def rpc(name, body=None):
 def all_boxes():
     out, start = {}, 0
     while True:
-        r = requests.get(f"{SB_URL}/rest/v1/image_bbox", headers={**H, "Range": f"{start}-{start + 9999}"},
-                         params={"select": "asset_guid,x0,y0,x1,y1", "order": "asset_guid"}, timeout=120)
+        r = requests.get(f"{SB_URL}/rest/v1/image_bbox", timeout=120, headers=H,
+                         params={"select": "asset_guid,x0,y0,x1,y1", "order": "asset_guid", "offset": start, "limit": 1000})
         r.raise_for_status()
         rows = r.json()
         for b in rows:
             out[b["asset_guid"].upper()] = [b["x0"], b["y0"], b["x1"], b["y1"]]
-        if len(rows) < 10000:
+        if not rows:
             return out
-        start += 10000
+        start += len(rows)
 
 
 def main():
