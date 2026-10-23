@@ -275,9 +275,61 @@ def run_plates():
     log("plates done", n, "of", len(plates))
 
 
+ES_TOOL = {"name": "record_assignment", "description": "One-to-one assignment of captions to the photos of a picture essay.",
+           "input_schema": {"type": "object", "properties": {"assignments": {"type": "array", "items": {"type": "object", "properties": {
+               "photo": {"type": "integer", "description": "Photo number as labelled in the prompt."},
+               "caption": {"type": "integer", "description": "Caption index, or -1 if no caption describes it."},
+               "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+               "caption_en": {"type": "string", "description": "Faithful, complete English translation of the assigned German caption."}},
+               "required": ["photo", "caption", "confidence", "caption_en"]}}}, "required": ["assignments"]}}
+
+
+def run_essays():
+    plates = get("library_plates", {"select": "id,page,idx,path,thumb_path,caption_candidates,essay_start", "pub": f"eq.{PUB}", "essay": "eq.true", "order": "sort"})
+    by = {}
+    for p in plates:
+        by.setdefault(p["essay_start"], []).append(p)
+    for start, group in by.items():
+        cands = group[0]["caption_candidates"] or []
+        content = []
+        for i, p in enumerate(group, 1):
+            content.append({"type": "text", "text": f"Photo {i}: page {p['page']}, position {p['idx']} on the page (top to bottom)."})
+            r = requests.get(f"{SB}/storage/v1/object/public/web/{p['path']}", timeout=60)
+            im = Image.open(io.BytesIO(r.content)).convert("RGB")
+            im.thumbnail((640, 640))
+            buf = io.BytesIO()
+            im.save(buf, "JPEG", quality=85)
+            content.append({"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": base64.b64encode(buf.getvalue()).decode()}})
+        lines = "\n".join(f"[{j}] (listed for p. {c['ref']}) {c['de']}" for j, c in enumerate(cands))
+        content.append({"type": "text", "text": (
+            f"These {len(group)} photos form one picture essay in the book (pages {group[0]['page']}-{group[-1]['page']}). "
+            f"The book lists these {len(cands)} captions in order; the page numbers given in the list contain a few printing errors "
+            "and the same object can appear twice (the same caption text may then be listed twice). "
+            "Assign each photo exactly one caption by matching what you see (object type, colour, material, people, setting, poster text) "
+            "and the order. Each listed caption goes to at most one photo. Return every photo.\n" + lines)})
+        data, _ = call(model=MODEL, max_tokens=16000,
+                       system="You match captions to photographs in a Swiss company history of Bally. " + GLOSSARY,
+                       tools=[ES_TOOL], messages=[{"role": "user", "content": content}])
+        used = {}
+        for a in data["assignments"]:
+            i, j = a["photo"] - 1, a.get("caption", -1)
+            if not (0 <= i < len(group)):
+                continue
+            p = group[i]
+            if 0 <= j < len(cands):
+                if j in used:
+                    log("caption reused", start, j, used[j], p["id"])
+                used[j] = p["id"]
+                patch("library_plates", {"id": f"eq.{p['id']}"}, {"caption_de": cands[j]["de"], "caption_en": a.get("caption_en") or None,
+                                                              "caption_source": "essay-" + a.get("confidence", "low")})
+            else:
+                patch("library_plates", {"id": f"eq.{p['id']}"}, {"caption_de": None, "caption_en": None, "caption_source": "none"})
+        log("essay", start, len(group), "photos", len(used), "captions assigned")
+
+
 if __name__ == "__main__":
     try:
-        {"plates": run_plates, "translate": run_translate, "notes": run_notes, "headings": run_headings}[MODE]()
+        {"plates": run_plates, "translate": run_translate, "notes": run_notes, "headings": run_headings, "essays": run_essays}[MODE]()
     except anthropic.AuthenticationError as e:
         log("auth failed", str(e)[:200])
         sys.exit(1)

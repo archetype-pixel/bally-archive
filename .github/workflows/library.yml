@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       steps:
-        description: "Comma list: load,plates,translate,notes,embed,headings"
+        description: "Comma list: load,plates,translate,notes,embed,headings,essays"
         default: "load,plates,translate,notes,embed,headings"
       skip_storage:
         description: "1 = skip image uploads on load"
@@ -130,5 +130,23 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODE: headings
+          MODEL: claude-opus-5-5
+        run: python migrate/library_ai.py
+
+  essays:
+    needs: plates
+    if: always() && contains(inputs.steps, 'essays')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: essays
           MODEL: claude-opus-5-5
         run: python migrate/library_ai.py
