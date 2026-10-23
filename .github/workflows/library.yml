@@ -1,0 +1,134 @@
+name: Library (book) load and AI
+
+on:
+  workflow_dispatch:
+    inputs:
+      steps:
+        description: "Comma list: load,plates,translate,notes,embed,headings"
+        default: "load,plates,translate,notes,embed,headings"
+      skip_storage:
+        description: "1 = skip image uploads on load"
+        default: "0"
+
+concurrency:
+  group: library
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+  ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+
+jobs:
+  load:
+    if: contains(inputs.steps, 'load')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: library-data
+          path: data
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DATA: data
+          SKIP_STORAGE: ${{ inputs.skip_storage }}
+        run: python migrate/library_load.py
+
+  plates:
+    needs: load
+    if: always() && contains(inputs.steps, 'plates') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: plates
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai.py
+
+  translate:
+    needs: load
+    if: always() && contains(inputs.steps, 'translate') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        part: ["0", "1", "2", "3", "4", "5"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: translate
+          MODEL: claude-opus-5-5
+          PART: ${{ matrix.part }}
+        run: python migrate/library_ai.py
+
+  notes:
+    needs: load
+    if: always() && contains(inputs.steps, 'notes') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: notes
+          MODEL: claude-opus-5-5
+          WORKERS: "4"
+        run: python migrate/library_ai.py
+
+  embed:
+    needs: load
+    if: always() && contains(inputs.steps, 'embed') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/library_embed.py
+
+  headings:
+    needs: translate
+    if: always() && contains(inputs.steps, 'headings')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: headings
+          MODEL: claude-opus-5-5
+        run: python migrate/library_ai.py
