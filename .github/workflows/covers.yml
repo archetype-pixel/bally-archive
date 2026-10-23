@@ -1,0 +1,27 @@
+name: Section covers (AI art direction)
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Comma list of key prefixes to redo (blank = all)"
+        default: ""
+
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+          MODEL: claude-opus-5-5
+          ONLY: ${{ inputs.only }}
+        run: python migrate/covers.py
