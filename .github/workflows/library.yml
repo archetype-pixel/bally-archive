@@ -140,6 +140,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: library-data
+          path: data
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -148,5 +152,6 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODE: essays
+          DATA: data
           MODEL: claude-opus-5-5
         run: python migrate/library_ai.py

@@ -287,7 +287,21 @@ ES_TOOL = {"name": "record_assignment", "description": "One-to-one assignment of
                "required": ["photo", "caption", "confidence", "caption_en"]}}}, "required": ["assignments"]}}
 
 
+def refresh_candidates():
+    data = os.environ.get("DATA")
+    if not data or not os.path.exists(f"{data}/library.json"):
+        return
+    b = json.load(open(f"{data}/library.json"))
+    ess = {}
+    for c in b["essay_caps"]:
+        ess.setdefault(c["essay"], []).append({"ref": c["ref"], "de": c["de"]})
+    for a, c in ess.items():
+        patch("library_plates", {"essay": "eq.true", "essay_start": f"eq.{a}"}, {"caption_candidates": c})
+    log("candidates refreshed", {a: len(c) for a, c in ess.items()})
+
+
 def run_essays():
+    refresh_candidates()
     plates = get("library_plates", {"select": "id,page,idx,path,thumb_path,caption_candidates,essay_start", "pub": f"eq.{PUB}", "essay": "eq.true", "order": "sort"})
     by = {}
     for p in plates:
