@@ -1,0 +1,54 @@
+name: AI descriptions (vision)
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Objects per shard (0 = all)"
+        default: "50"
+      shards:
+        description: "Parallel shards (1, 4, 8 or 16)"
+        default: "1"
+      model:
+        description: "Model id"
+        default: "claude-haiku-5-5"
+
+concurrency:
+  group: describe
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.m.outputs.shards }}
+    steps:
+      - id: m
+        run: echo "shards=$(python3 -c 'import json,sys;n=int(sys.argv[1]);print(json.dumps(list(range(n))))' ${{ inputs.shards }})" >> "$GITHUB_OUTPUT"
+
+  describe:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - name: Describe (shard ${{ matrix.shard }})
+        env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODEL: ${{ inputs.model }}
+          LIMIT: ${{ inputs.limit }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ inputs.shards }}
+          RUN_SECONDS: "20400"
+          WORKERS: "6"
+        run: python migrate/describe.py
