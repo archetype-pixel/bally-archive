@@ -192,7 +192,7 @@ for a, b, cps in ESSAYS:
     txt = ""
     for cp in cps:
         pg = d[cp - 1]
-        bl = [x for x in pg.get_text("dict", sort=False)["blocks"] if x["type"] == 0 and x["bbox"][1] > 60]
+        bl = [x for x in pg.get_text("dict", sort=False)["blocks"] if x["type"] == 0 and x["bbox"][1] > 50]
         W = pg.rect.width
         bl.sort(key=lambda x: (0 if x["bbox"][0] < W / 2 - 5 else 1, x["bbox"][1]))
         for x in bl:
@@ -208,7 +208,7 @@ for a, b, cps in ESSAYS:
 notes_txt = ""
 for p in range(296, 309):
     pg = d[p - 1]
-    bl = [x for x in pg.get_text("dict", sort=False)["blocks"] if x["type"] == 0 and x["bbox"][1] > 60]
+    bl = [x for x in pg.get_text("dict", sort=False)["blocks"] if x["type"] == 0 and x["bbox"][1] > 50]
     W = pg.rect.width
     bl.sort(key=lambda x: (0 if x["bbox"][0] < W / 2 - 5 else 1, x["bbox"][1]))
     for x in bl:
