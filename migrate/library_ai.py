@@ -251,6 +251,9 @@ def run_plates():
         return "\n".join(p["text_de"] for p in passages if set(p.get("pages") or [p["page"]]) & set(s))
 
     def one(pl):
+        if (pl.get("caption_source") or "").startswith("essay-") and pl.get("caption_de"):
+            # caption already fixed by the joint essay assignment: describe against it only
+            pl = dict(pl, caption_candidates=[{"ref": pl["page"], "de": pl["caption_de"]}])
         try:
             data, u = plate_one(pl, ctx_for(pl["page"]))
             cands = pl["caption_candidates"] or []
