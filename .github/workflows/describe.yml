@@ -51,5 +51,5 @@ jobs:
           SHARD: ${{ matrix.shard }}
           SHARDS: ${{ inputs.shards }}
           RUN_SECONDS: "20400"
-          WORKERS: "6"
+          WORKERS: "4"
         run: python migrate/describe.py
