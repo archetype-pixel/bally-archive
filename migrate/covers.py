@@ -90,7 +90,7 @@ def pick_set(key, label, cands):
     content.append({"type": "text", "text": (
         f"Pick 5 objects to represent '{label}' in a quiet row of 5 tiles on its header. Choose the strongest, most characteristic "
         "and best-photographed pieces, with variety (types, eras, colours) and no near-duplicates. Prefer clean studio shots of a "
-        "single object; avoid blurry, cropped or cluttered images. Order them so the row is balanced.")})
+        "single object; avoid blurry, cropped or cluttered images, and never pick raw scans that show colour-calibration bars, grey scales, rulers, scanner beds or tape. Put the single most beautiful and characteristic piece FIRST: it is used alone as the collection card image. Then order the rest so the row is balanced.")})
     d = ask(content, SET_TOOL)
     chosen = [cands[i - 1] for i in d["choices"] if 1 <= i <= len(cands)][:5]
     return {"key": key, "kind": "set", "label": label, "source": "archive", "object_guids": [c["guid"] for c in chosen],
