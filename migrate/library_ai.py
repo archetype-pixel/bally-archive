@@ -21,6 +21,19 @@ WS = os.environ.get("ANTHROPIC_WORKSPACE_ID", "")
 client = anthropic.Anthropic(max_retries=8, default_headers={"anthropic-workspace-id": WS} if WS else None)
 
 
+def call(**kw):
+    """Opus models reject forced tool_choice: ask for the tool, retry if the model answers in prose."""
+    name = kw["tools"][0]["name"]
+    kw["tool_choice"] = {"type": "auto"}
+    kw["system"] = kw["system"] + f" Always answer by calling the {name} tool exactly once, with no prose."
+    for attempt in range(3):
+        msg = client.messages.create(**kw)
+        for b in msg.content:
+            if b.type == "tool_use":
+                return b.input, msg.usage
+    raise RuntimeError("model did not call the tool")
+
+
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 
@@ -66,16 +79,15 @@ TR_TOOL = {"name": "record_translation", "description": "Return the English tran
 
 def translate_batch(items, context_en, header):
     payload = [{"id": i, "kind": k, "de": t} for i, k, t in items]
-    msg = client.messages.create(
+    data, usage = call(
         model=MODEL, max_tokens=16000,
         system="You are the literary translator of a German-language Swiss business history into English. " + GLOSSARY,
-        tools=[TR_TOOL], tool_choice={"type": "tool", "name": "record_translation"},
+        tools=[TR_TOOL],
         messages=[{"role": "user", "content":
                    f"{header}\n\nPreceding English text, for continuity only (do not translate again):\n{context_en or '(start)'}\n\n"
                    f"Translate each item. Headings stay short headings. Return every id.\n{json.dumps(payload, ensure_ascii=False)}"}])
-    data = next(b.input for b in msg.content if b.type == "tool_use")
     got = {it["id"]: it["en"] for it in data["items"]}
-    return got, msg.usage
+    return got, usage
 
 
 def run_translate():
@@ -218,14 +230,13 @@ def plate_one(pl, ctx_text):
             f"{' (picture essay)' if pl['essay'] else ''}, position {pl['idx']} on the page, figure label {pl['fig_no']}.\n"
             f"{hint}\nCandidate German captions:\n" + ("\n".join(lines) or "(none)") +
             f"\n\nSurrounding book text (German, for context):\n{ctx_text[:2500]}")
-    msg = client.messages.create(
+    return call(
         model=MODEL, max_tokens=2000,
         system=("You catalogue photographs from a Swiss company history of Bally. Pick the caption that describes this exact photo "
                 "using what you see (object type, colours, people, setting, posters' text) and the figure numbering. "
                 "Several photos in a picture essay share one caption list; each caption belongs to exactly one photo. " + GLOSSARY),
-        tools=[PL_TOOL], tool_choice={"type": "tool", "name": "record_plate"},
+        tools=[PL_TOOL],
         messages=[{"role": "user", "content": [img_block(pl["path"]), {"type": "text", "text": text}]}])
-    return next(b.input for b in msg.content if b.type == "tool_use"), msg.usage
 
 
 def run_plates():
