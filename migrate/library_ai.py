@@ -344,9 +344,71 @@ def run_essays():
         log("essay", start, len(group), "photos", len(used), "captions assigned")
 
 
+LK_TOOL = {"name": "record_link_verdict", "description": "Verdict on whether a book photo and an archive object show the same thing.",
+           "input_schema": {"type": "object", "properties": {
+               "verdict": {"type": "string", "enum": ["same-photo", "same-object", "same-model", "related", "different"],
+                           "description": "same-photo: the identical photograph; same-object: the same physical item photographed differently; same-model: a different example of the same model/design (e.g. other colour or size); related: same subject or scene type but not the same item or model; different: unrelated."},
+               "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+               "reason": {"type": "string", "description": "One short sentence naming the decisive visual evidence."}},
+               "required": ["verdict", "confidence", "reason"]}}
+
+
+def thumb_block(path, px=900):
+    r = requests.get(f"{SB}/storage/v1/object/public/web/{path}", timeout=60)
+    r.raise_for_status()
+    im = Image.open(io.BytesIO(r.content)).convert("RGB")
+    im.thumbnail((px, px))
+    b = io.BytesIO()
+    im.save(b, "JPEG", quality=88)
+    return {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": base64.b64encode(b.getvalue()).decode()}}
+
+
+def run_links():
+    r = requests.post(f"{SB}/rest/v1/rpc/library_link_review_batch", headers=H, json={"p_limit": 1000}, timeout=300)
+    r.raise_for_status()
+    rows = r.json()
+    log(len(rows), "suggested links to review")
+
+    def one(k):
+        try:
+            content = [{"type": "text", "text": "BOOK PHOTO (from Abegg/Matter, Bally – Hier und Jetzt):"}, thumb_block(k["plate_path"]),
+                       {"type": "text", "text": f"Book caption: {k.get('caption_en') or k.get('caption_de') or '(none)'}"},
+                       {"type": "text", "text": "ARCHIVE OBJECT, closest photo:"}, thumb_block(k["matched_thumb"], 600)]
+            for t in (k.get("other_thumbs") or [])[:2]:
+                if t and t != k["matched_thumb"]:
+                    content += [{"type": "text", "text": "Another photo of the same archive object:"}, thumb_block(t, 400)]
+            meta = {x: k.get(x) for x in ("object_code", "category", "subcategory", "model_name", "date_from", "date_to", "description", "colors", "tags") if k.get(x)}
+            content.append({"type": "text", "text": "Archive record: " + json.dumps(meta, ensure_ascii=False) +
+                            "\nDo the book photo and the archive object show the same thing? Judge by construction, shape, colour, "
+                            "materials, details, text and setting. Book studio photos may be lit and cropped differently from archive photos."})
+            data, _ = call(model=MODEL, max_tokens=600, system="You compare museum photographs for the Bally heritage archive. Be strict: "
+                           "only call it the same object or model when the details match.", tools=[LK_TOOL],
+                           messages=[{"role": "user", "content": content}])
+            v, c = data.get("verdict"), data.get("confidence")
+            if v in ("same-photo", "same-object", "same-model") and c in ("high", "medium"):
+                status = "confirmed"
+            elif v in ("related", "different") and c in ("high", "medium"):
+                status = "rejected"
+            else:
+                status = "suggested"
+            method = {"same-photo": "visual-same-photo", "same-object": "same-object", "same-model": "same-model"}.get(v, "visual")
+            patch("library_plate_links", {"plate_id": f"eq.{k['plate_id']}", "object_guid": f"eq.{k['object_guid']}"},
+                  {"status": status, "ai_verdict": f"{v}/{c}", "ai_reason": data.get("reason"), "ai_model": MODEL,
+                   **({"method": method} if status == "confirmed" else {})})
+            return status
+        except Exception as e:
+            log("link error", k["plate_id"], k["object_guid"], type(e).__name__, str(e)[:200])
+            return "error"
+
+    with ThreadPoolExecutor(WORKERS) as ex:
+        res = list(ex.map(one, rows))
+    from collections import Counter
+    log("links reviewed", dict(Counter(res)))
+
+
 if __name__ == "__main__":
     try:
-        {"plates": run_plates, "translate": run_translate, "notes": run_notes, "headings": run_headings, "essays": run_essays}[MODE]()
+        {"plates": run_plates, "translate": run_translate, "notes": run_notes, "headings": run_headings, "essays": run_essays, "links": run_links}[MODE]()
     except anthropic.AuthenticationError as e:
         log("auth failed", str(e)[:200])
         sys.exit(1)

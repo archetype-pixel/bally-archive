@@ -155,3 +155,21 @@ jobs:
           DATA: data
           MODEL: claude-opus-5-5
         run: python migrate/library_ai.py
+
+  links:
+    if: contains(inputs.steps, 'links')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: links
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai.py
