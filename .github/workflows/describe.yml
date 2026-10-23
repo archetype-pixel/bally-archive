@@ -45,6 +45,7 @@ jobs:
           SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
           MODEL: ${{ inputs.model }}
           LIMIT: ${{ inputs.limit }}
           SHARD: ${{ matrix.shard }}

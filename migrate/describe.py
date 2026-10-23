@@ -27,7 +27,8 @@ WORKERS = int(os.environ.get("WORKERS", "6"))
 IMG_PX = 768
 H = {"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": "application/json"}
 T0 = time.time()
-client = anthropic.Anthropic(max_retries=6)
+WORKSPACE = os.environ.get("ANTHROPIC_WORKSPACE_ID", "")
+client = anthropic.Anthropic(max_retries=6, default_headers={"anthropic-workspace-id": WORKSPACE} if WORKSPACE else None)
 
 THEMES = ["golf", "tennis", "skiing", "apres-ski", "mountaineering", "hiking", "beach", "sailing", "ballet", "dance",
           "riding", "hunting", "football", "cycling", "running", "ice-skating", "motoring", "travel", "evening",
