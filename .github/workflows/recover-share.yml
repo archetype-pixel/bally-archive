@@ -1,0 +1,23 @@
+name: Recover unlinked photos from the share
+
+on:
+  workflow_dispatch:
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install azure-storage-file-share requests Pillow
+      - name: Recover
+        env:
+          AZ_ACCOUNT: ballydigitalassets
+          AZ_SHARE: azuweubllssa
+          AZ_KEY: ${{ secrets.AZ_KEY }}
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/recover_share.py
