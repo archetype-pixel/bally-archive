@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: "commons | collect | auction | load | embed | links"
+        description: "commons | collect | auction | registry | load | embed | links"
         default: "commons"
       sources:
         description: "collect: comma list of plugins (blank = default); auction: comma list of houses"
@@ -46,6 +46,7 @@ jobs:
             commons) python migrate/ext_commons.py ;;
             collect) python migrate/ext_collect.py ;;
             auction) python migrate/ext_auction.py ;;
+            registry) python migrate/ext_registry.py ;;
             load) python migrate/ext_load.py ;;
             embed) python migrate/ext_embed.py ;;
             links) MODE=links LINK_SET=ext MODEL=claude-opus-5-5 WORKERS=6 python migrate/library_ai.py ;;
