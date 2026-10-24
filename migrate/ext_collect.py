@@ -271,7 +271,96 @@ def src_memobase():
     return out
 
 
-PLUGINS = {"vam": src_vam, "vamorg": src_vamorg, "met": src_met, "europeana": src_europeana, "loc": src_loc, "ia": src_ia,
+WD_UA = {"User-Agent": "BallyHeritageArchive/1.0 (https://bally-archive-time-capsule.lovable.app; archetypegroup@gmail.com)",
+         "Accept": "application/sparql-results+json"}
+WD_QUERIES = [
+    """SELECT DISTINCT ?item ?itemLabel ?itemDescription ?propLabel ?img ?inception ?birth WHERE {
+  VALUES ?bally { wd:Q688195 wd:Q107150805 wd:Q27488796 wd:Q27488797 wd:Q99364026 wd:Q125449311 wd:Q29525229 }
+  { ?item ?p ?bally } UNION { ?bally ?p ?item }
+  ?prop wikibase:directClaim ?p . FILTER(STRSTARTS(STR(?item), "http://www.wikidata.org/entity/Q"))
+  OPTIONAL { ?item wdt:P18 ?img } OPTIONAL { ?item wdt:P571 ?inception } OPTIONAL { ?item wdt:P569 ?birth }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en,de,fr". } } LIMIT 3000""",
+    """SELECT DISTINCT ?item ?itemLabel ?itemDescription ?img ?birth WHERE {
+  { ?item wdt:P53 wd:Q99364026 } UNION { ?item wdt:P734 wd:Q37080030 ; wdt:P27 wd:Q39 }
+  OPTIONAL { ?item wdt:P18 ?img } OPTIONAL { ?item wdt:P569 ?birth }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". } }""",
+    """SELECT DISTINCT ?item ?itemLabel ?itemDescription ?img ?inception WHERE {
+  ?item rdfs:label ?l . FILTER(LANG(?l) IN ("de","en","fr")) FILTER(CONTAINS(?l, "Bally"))
+  ?item wdt:P131* wd:Q68120 .
+  OPTIONAL { ?item wdt:P18 ?img } OPTIONAL { ?item wdt:P571 ?inception }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". } }""",
+]
+WD_SKIP = {"Q601897", "Q4851974", "Q805383", "Q109937311", "Q18638654", "Q13225111"}
+
+
+def src_wikidata():
+    """Wikidata entities linked to the Bally company, family, museum, archive and sites."""
+    out, seen = [], set()
+    for q in WD_QUERIES:
+        d = None
+        for t in range(4):
+            try:
+                r = requests.get("https://query.wikidata.org/sparql", params={"query": q, "format": "json"}, headers=WD_UA, timeout=90)
+                if r.status_code == 429:
+                    time.sleep(int(r.headers.get("Retry-After", 30))); continue
+                r.raise_for_status(); d = r.json(); break
+            except Exception as e:
+                log("wikidata fail", type(e).__name__); time.sleep(10)
+        time.sleep(2)
+        for b in (d or {}).get("results", {}).get("bindings", []):
+            qid = b["item"]["value"].rsplit("/", 1)[-1]
+            if qid in seen or qid in WD_SKIP:
+                continue
+            seen.add(qid)
+            g = lambda k: (b.get(k) or {}).get("value")
+            img = g("img")
+            date = (g("inception") or g("birth") or "")[:10]
+            out.append({"source": "wikidata", "source_id": qid, "source_url": f"https://www.wikidata.org/wiki/{qid}", "title": g("itemLabel"),
+                        "description": " ".join(x for x in [g("itemDescription"), f"(Wikidata relation: {g('propLabel')})" if g("propLabel") else None] if x),
+                        "date_text": date or None, "creator": None,
+                        "image_url": (img.replace("http://", "https://") + "?width=1600") if img else None,
+                        "license": "CC0 (data); image per Wikimedia Commons", "credit": "Wikidata", "kind_hint": "entity", "data": {"qid": qid, "relation": g("propLabel")}})
+    return out
+
+
+def src_shab():
+    """Swiss Official Gazette of Commerce (SHAB/FOSC), electronic edition: notices naming Bally entities."""
+    import xml.etree.ElementTree as ET
+    out, seen = [], set()
+    for kw in ["Bally Schuhfabriken", "Bally International", "Bally Schweiz", "Bally Holding", "C. F. Bally", "Bally Management", "Bally Retail", "Bally Logistik", "Bally"]:
+        page = 0
+        while page < 20:
+            try:
+                r = requests.get("https://amtsblattportal.ch/api/v1/publications", params={"publicationStates": "PUBLISHED", "tenant": "shab", "keyword": kw,
+                                 "pageRequest.page": page, "pageRequest.size": 200}, headers={**UA, "Accept": "application/xml"}, timeout=90)
+                root = ET.fromstring(r.content)
+            except Exception as e:
+                log("shab fail", type(e).__name__); break
+            metas = [m for m in root.iter() if m.tag.endswith("meta")]
+            if not metas:
+                break
+            for m in metas:
+                def f(path):
+                    el = m.find(path)
+                    return el.text.strip() if el is not None and el.text else None
+                pid = f("id")
+                titles = {c.tag: (c.text or "") for c in (m.find("title") or [])}
+                title = titles.get("de") or titles.get("en") or titles.get("fr") or titles.get("it") or ""
+                if not pid or pid in seen or "bally" not in title.lower():
+                    continue
+                seen.add(pid)
+                out.append({"source": "shab", "source_id": pid, "source_url": f"https://amtsblattportal.ch/#!/search/publications/detail/{pid}",
+                            "title": title, "description": f"SHAB/FOSC notice {f('publicationNumber') or ''}, rubric {f('rubric') or ''}/{f('subRubric') or ''}. " + (titles.get("en") or ""),
+                            "date_text": (f("publicationDate") or "")[:10], "creator": "Swiss Official Gazette of Commerce", "image_url": None,
+                            "license": "Public record", "credit": "SHAB / FOSC", "kind_hint": "document", "data": {"publicationNumber": f("publicationNumber"), "rubric": f("rubric"), "subRubric": f("subRubric"), "titles": titles}})
+            total = next((int(e.text) for e in root.iter() if e.tag.endswith("total") and (e.text or "").isdigit()), 0)
+            page += 1
+            if page * 200 >= total:
+                break
+    return out
+
+
+PLUGINS = {"wikidata": src_wikidata, "shab": src_shab, "vam": src_vam, "vamorg": src_vamorg, "met": src_met, "europeana": src_europeana, "loc": src_loc, "ia": src_ia,
            "ccsa": src_ccsa, "srg": src_srg, "memobase": src_memobase}
 
 FILTER_TOOL = {"name": "classify", "description": "Classify candidate records.", "input_schema": {"type": "object", "properties": {
