@@ -82,7 +82,11 @@ def main():
                          "text_en": c["title"] + (f": {c['subtitle']}" if c.get("subtitle") else "") + (f" ({c['author']})" if c.get("author") else "")})
     upsert("library_passages", rows, "pub,seq")
     # notes restart per chapter: key them as chapter*1000+no
-    upsert("library_notes", [{"pub": PUB, "no": n["part"] * 1000 + n["no"], "part": n["part"], "text_de": None, "text_en": n["en"]} for n in b["notes"]], "pub,no")
+    merged = {}
+    for n in b["notes"]:
+        k = n["part"] * 1000 + n["no"]
+        merged[k] = (merged[k] + " " + n["en"]) if k in merged else n["en"]
+    upsert("library_notes", [{"pub": PUB, "no": k, "part": k // 1000, "text_de": None, "text_en": v} for k, v in sorted(merged.items())], "pub,no")
 
     caps = b["captions"]
     prow = []
