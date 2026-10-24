@@ -14,7 +14,7 @@ H = {"apikey": KEY, "Authorization": f"Bearer {KEY}", "Content-Type": "applicati
 UA = {"User-Agent": "BallyHeritageArchive/1.0 (non-commercial research archive; archetypegroup@gmail.com)"}
 WS = os.environ.get("ANTHROPIC_WORKSPACE_ID", "")
 client = anthropic.Anthropic(max_retries=8, default_headers={"anthropic-workspace-id": WS} if WS else None)
-SOURCES = [s for s in os.environ.get("SOURCES", "vam,met,europeana,loc,ia").split(",") if s]
+SOURCES = [s for s in (os.environ.get("SOURCES") or "vam,met,europeana,loc,ia").split(",") if s]
 EKEY = os.environ.get("EUROPEANA_KEY", "api2demo")
 
 
@@ -143,12 +143,141 @@ def src_ia():
     return out
 
 
-PLUGINS = {"vam": src_vam, "met": src_met, "europeana": src_europeana, "loc": src_loc, "ia": src_ia}
+def src_vamorg():
+    """V&A objects whose maker is the Bally organisation record (A19964)."""
+    out, page = [], 1
+    while True:
+        d = jget("https://api.vam.ac.uk/v2/objects/search", {"id_organisation": "A19964", "page_size": 100, "page": page})
+        if not d:
+            break
+        for r in d.get("records", []):
+            img = r.get("_images", {}).get("_iiif_image_base_url")
+            out.append({"source": "vam", "source_id": r["systemNumber"], "source_url": f"https://collections.vam.ac.uk/item/{r['systemNumber']}/",
+                        "title": r.get("_primaryTitle") or r.get("objectType"), "description": f"{r.get('objectType','')}. Maker: Bally. Place: {r.get('_primaryPlace','')}.",
+                        "date_text": r.get("_primaryDate"), "creator": "Bally", "image_url": (img + "full/!1600,1600/0/default.jpg") if img else None,
+                        "license": "© Victoria and Albert Museum, London", "credit": "Victoria and Albert Museum, London", "data": r})
+        if page >= d.get("info", {}).get("pages", 1):
+            break
+        page += 1
+    return out
+
+
+def _marc(rec, tag, code=None, cond=None):
+    import xml.etree.ElementTree as ET
+    ns = "{http://www.loc.gov/MARC21/slim}"
+    vals = []
+    for df in rec.iter(f"{ns}datafield"):
+        if df.get("tag") != tag:
+            continue
+        subs = {}
+        for sf in df.findall(f"{ns}subfield"):
+            subs.setdefault(sf.get("code"), []).append(sf.text or "")
+        if cond and not cond(subs):
+            continue
+        vals.append(" ".join(subs.get(code, [])) if code else " ".join(" ".join(v) for v in subs.values()))
+    return [v.strip() for v in vals if v.strip()]
+
+
+def src_ccsa():
+    """Swiss Poster Collective Catalogue (Swiss National Library, Alma SRU)."""
+    import xml.etree.ElementTree as ET
+    ns = "{http://www.loc.gov/MARC21/slim}"
+    base = "https://nb-posters.alma.exlibrisgroup.com/view/sru/41SNL_53_INST"
+    q = ('alma.all_for_ui=bally and (alma.all_for_ui=schuhe or alma.all_for_ui=chaussures or alma.all_for_ui=schuhfabriken '
+         'or alma.all_for_ui=schoenenwerd or alma.all_for_ui=schönenwerd or alma.all_for_ui=scarpe or alma.all_for_ui=shoes)')
+    out, start = [], 1
+    for query in [q, 'alma.all_for_ui="Bally Schuhfabriken"', "alma.all_for_ui=bally"]:
+        start = 1
+        while start:
+            try:
+                r = requests.get(base, params={"version": "1.2", "operation": "searchRetrieve", "query": query, "maximumRecords": 50, "startRecord": start}, headers=UA, timeout=90)
+                root = ET.fromstring(r.content)
+            except Exception as e:
+                log("ccsa fail", type(e).__name__); break
+            for rec in root.iter(f"{ns}record"):
+                cf = {c.get("tag"): c.text for c in rec.findall(f"{ns}controlfield")}
+                rid = cf.get("001")
+                if not rid:
+                    continue
+                imgs = _marc(rec, "856", "u")
+                title = " ".join(_marc(rec, "245", "a") + _marc(rec, "245", "b"))
+                creator = (_marc(rec, "100", "a") or _marc(rec, "700", "a") or [None])[0]
+                date = (_marc(rec, "260", "c") or _marc(rec, "264", "c") or [(cf.get("008") or "")[7:11]])[0]
+                desc = ". ".join(_marc(rec, "500", "a") + _marc(rec, "300") + ["Client: " + x for x in _marc(rec, "710", "a", lambda s: "cli" in s.get("4", []))]
+                                 + ["Printer: " + x for x in _marc(rec, "710", "a", lambda s: "pop" in s.get("4", []) or "prt" in s.get("4", []))])
+                out.append({"source": "ccsa", "source_id": rid, "source_url": f"https://nb-posters.primo.exlibrisgroup.com/discovery/fulldisplay?docid=alma{rid}&vid=41SNL_53_INST:posters",
+                            "title": title, "description": desc[:1500], "date_text": date, "creator": creator, "image_url": imgs[0] if imgs else None,
+                            "license": "See Swiss National Library / holding institution", "credit": "Swiss Poster Collective Catalogue (CCSA), Swiss National Library",
+                            "kind_hint": "poster", "data": {"subjects": _marc(rec, "650", "a"), "holder": _marc(rec, "856", "x"), "images": imgs}})
+            nxt = root.find(".//{http://www.loc.gov/zing/srw/}nextRecordPosition")
+            start = int(nxt.text) if nxt is not None and nxt.text else None
+            time.sleep(0.5)
+    return out
+
+
+SRG_KEEP = re.compile(r"schuh|schönenwerd|schoenenwerd|caslano|chaussure|calzat|scarp|luxe|lusso|mode|moda|fashion|ballyana|bally-park|thomke|textil|leder|cuir", re.I)
+
+
+def src_srg():
+    """SRF / RTS / RSI archive via the open SRG SSR Integration Layer."""
+    out = []
+    for bu in ["srf", "rts", "rsi"]:
+        for q in ["Bally", "Bally Schönenwerd", "Bally Schuhe", "Bally chaussures", "Bally calzature"]:
+            url = f"https://il.srgssr.ch/integrationlayer/2.0/{bu}/searchResultMediaList"
+            params = {"q": q, "pageSize": 50, "includeAggregations": "false"}
+            pages = 0
+            while url and pages < 20:
+                d = jget(url, params)
+                params = None
+                if not d:
+                    break
+                for m in d.get("searchResultMediaList", []):
+                    text = f"{m.get('title','')} {m.get('description','')} {m.get('lead','')} {(m.get('show') or {}).get('title','')}"
+                    if "bally" not in text.lower() or not SRG_KEEP.search(text):
+                        continue
+                    out.append({"source": "srg", "source_id": m.get("urn") or m.get("id"), "source_url": f"https://www.{bu}.ch/play/tv/redirect/detail/{m.get('id')}",
+                                "title": m.get("title"), "description": strip(f"{(m.get('show') or {}).get('title','')}: {m.get('description') or m.get('lead') or ''}")[:1500],
+                                "date_text": (m.get("date") or "")[:10], "creator": {"srf": "SRF", "rts": "RTS", "rsi": "RSI"}[bu],
+                                "image_url": m.get("imageUrl"), "license": "© SRG SSR", "credit": f"{bu.upper()} archive (SRG SSR)", "kind_hint": m.get("mediaType"),
+                                "data": {k: m.get(k) for k in ("urn", "mediaType", "duration", "playableAbroad", "date")} | {"show": (m.get("show") or {}).get("title"), "bu": bu}})
+                url = d.get("next"); pages += 1
+    return out
+
+
+def src_memobase():
+    """Memobase (Swiss audiovisual heritage) open API."""
+    out = []
+    for q in ["Bally", "Bally Schönenwerd", "Schuhfabrik Schönenwerd", "Ballyana", "Bally-Park", "Schuhmuseum Schönenwerd"]:
+        off = 0
+        while off < 1000:
+            d = jget("https://api.memobase.ch/record/search", {"q": q, "format": "json", "size": 100, "offset": off})
+            mem = (d or {}).get("hydra:member") or []
+            if not mem:
+                break
+            for r in mem:
+                rid = str(r.get("@id", "")).split(":")[-1]
+                inst = r.get("hasInstantiation") or []
+                inst = inst if isinstance(inst, list) else [inst]
+                thumb = next((i.get("locator") for i in inst if isinstance(i, dict) and i.get("type") == "thumbnail"), None)
+                media = next((i.get("locator") for i in inst if isinstance(i, dict) and i.get("type") == "digitalObject"), None)
+                date = ((r.get("issued") or r.get("created") or {}) if isinstance(r.get("issued") or r.get("created"), dict) else {}).get("normalizedDateValue")
+                out.append({"source": "memobase", "source_id": rid, "source_url": f"https://memobase.ch/object/{rid}", "title": strip(r.get("title")),
+                            "description": strip(r.get("abstract") or r.get("descriptiveNote"))[:1500], "date_text": date, "creator": strip(r.get("hasOrHadHolder"))[:200] or None,
+                            "image_url": thumb, "license": "See Memobase rights statement", "credit": "Memobase (Memoriav)", "kind_hint": strip(r.get("type")),
+                            "data": {"media": media, "collection": r.get("isOrWasPartOf"), "type": r.get("type"), "sameAs": r.get("sameAs")}})
+            off += 100
+            if off >= (d.get("hydra:totalItems") or 0):
+                break
+    return out
+
+
+PLUGINS = {"vam": src_vam, "vamorg": src_vamorg, "met": src_met, "europeana": src_europeana, "loc": src_loc, "ia": src_ia,
+           "ccsa": src_ccsa, "srg": src_srg, "memobase": src_memobase}
 
 FILTER_TOOL = {"name": "classify", "description": "Classify candidate records.", "input_schema": {"type": "object", "properties": {
     "items": {"type": "array", "items": {"type": "object", "properties": {
         "i": {"type": "integer"},
-        "relevance": {"type": "number", "description": "0 to 1: is this record about the Swiss luxury shoe and fashion house Bally (C. F. Bally, Bally Schuhfabriken AG, its factories, stores, products, advertising and posters, people, the Bally family, Bally-Park, Ballyana)? Score 0 for Bally Gaming, Bally's casinos, Bally Manufacturing/pinball, Bally Sports, Bally Total Fitness, Boris Bally (metal artist), places named Bally (Ireland, India), and people merely surnamed Bally with no link to the company."},
+        "relevance": {"type": "number", "description": "0 to 1: is this record about the Swiss luxury shoe and fashion house Bally (C. F. Bally, Bally Schuhfabriken AG, its factories, stores, products, advertising and posters, people, the Bally family, Bally-Park, Ballyana)? Score 0 for Bally Gaming, Bally's casinos, Bally Manufacturing/pinball, Bally Sports, Bally Total Fitness, Boris Bally (metal artist), places named Bally (Ireland, India), the botanist Peter Bally (herbarium sheets, Kalanchoë), gunsmiths, politicians or athletes named Bally, and people merely surnamed Bally with no link to the company."},
         "kind": {"type": "string", "enum": ["factory", "store", "product", "poster", "advertisement", "person", "aerial", "document", "film", "logo", "place", "publication", "other"]},
         "year": {"type": "integer", "description": "Best year if stated, else 0."},
         "title_en": {"type": "string", "description": "Short English catalogue title."}},
