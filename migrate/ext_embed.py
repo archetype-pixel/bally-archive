@@ -13,7 +13,7 @@ def log(*a):
 
 
 def main():
-    recs = requests.get(f"{SB}/rest/v1/ext_records", headers=H, params={"select": "id,thumb_path,kind", "thumb_path": "not.is.null", "kind": "neq.trademark", "limit": 5000}, timeout=60).json()
+    recs = requests.get(f"{SB}/rest/v1/ext_records", headers=H, params={"select": "id,thumb_path,kind", "thumb_path": "not.is.null", "kind": "not.in.(trademark,patent)", "limit": 5000}, timeout=60).json()
     have = {h["record_id"] for h in requests.get(f"{SB}/rest/v1/ext_embeddings", headers=H, params={"select": "record_id", "limit": 10000}, timeout=60).json()}
     recs = [r for r in recs if r["id"] not in have]
     log(len(recs), "records to fingerprint")
