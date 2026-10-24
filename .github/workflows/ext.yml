@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: "commons | collect | load | embed | links"
+        description: "commons | collect | auction | load | embed | links"
         default: "commons"
 
 concurrency:
@@ -40,6 +40,7 @@ jobs:
           case "$SOURCE" in
             commons) python migrate/ext_commons.py ;;
             collect) python migrate/ext_collect.py ;;
+            auction) python migrate/ext_auction.py ;;
             load) python migrate/ext_load.py ;;
             embed) python migrate/ext_embed.py ;;
             links) MODE=links LINK_SET=ext MODEL=claude-opus-5-5 WORKERS=6 python migrate/library_ai.py ;;
