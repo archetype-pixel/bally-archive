@@ -68,9 +68,10 @@ def candidates(r):
             num = "US" + num
         out += [(u, {}) for u in gpatent_drawing(num)]
     elif s == "memobase":
-        m = d.get("media")
-        if m:
-            out += [(m, {}), (m + "-poster", {})]
+        m = d.get("media") or f"https://prod.media.memobase.ch/memo/{r['source_id']}-1"
+        oid = m.rstrip("/").rsplit("/", 1)[-1]
+        base = f"https://media.memobase.ch/memo/{oid}"
+        out += [(f"{base}/resize/size2000x2000", {}), (f"{base}/master", {}), (f"{base}-poster/resize/size2000x2000", {}), (f"{base}-poster/master", {})]
     elif s == "bonhams":
         u = r.get("image_url") or ""
         q = parse_qs(urlparse(u).query).get("url")
