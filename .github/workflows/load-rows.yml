@@ -1,0 +1,21 @@
+name: Load rows into a table
+
+on:
+  workflow_dispatch:
+    inputs:
+      table: {description: table name, required: true}
+      file: {description: JSON file path in repo, required: true}
+      conflict: {description: on_conflict column, default: ""}
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install requests
+      - env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/load_rows.py "${{ inputs.table }}" "${{ inputs.file }}" ${{ inputs.conflict }}
