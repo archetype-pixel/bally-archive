@@ -23,12 +23,16 @@ hotels; Bally Sports; Bally Total Fitness / Bally Spas; Bally Technologies; Ball
 the botanist P. R. O. Bally and plant specimens; places named Bally (Ireland, India: Bally/Howrah); the Bally carver
 (Pennsylvania walking sticks); clockmakers, gunsmiths, painters, politicians, athletes, musicians or anyone else simply
 surnamed Bally; Ballymena, Ballycastle etc. A venue that is merely in a Bally building (e.g. an exhibition at Bally-Halle)
-is related but weak. Shoes or bags stamped Bally are the house. Look at the image too when given."""
+is related but weak. Shoes or bags stamped Bally are the house. Look at the image too when given.
+For videos and press items, also judge archival value: Bally's own films, shows, ads, documentaries, broadcast archive
+footage and interviews with Bally people are "house". Third-party commentary, news-desk talking heads, reaction or review
+videos, unboxings, resale/authentication clips and low-effort reposts ABOUT Bally are "commentary" (correct company, but
+not archive material)."""
 
 TOOL = {"name": "verdicts", "description": "Verdict per record.", "input_schema": {"type": "object", "properties": {"items": {"type": "array", "items": {
     "type": "object", "properties": {
         "i": {"type": "integer"},
-        "verdict": {"type": "string", "enum": ["house", "related", "not_house", "unsure"]},
+        "verdict": {"type": "string", "enum": ["house", "related", "commentary", "not_house", "unsure"]},
         "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
         "reason": {"type": "string", "description": "One short sentence."}},
     "required": ["i", "verdict", "confidence", "reason"]}}}, "required": ["items"]}}
@@ -36,6 +40,31 @@ TOOL = {"name": "verdicts", "description": "Verdict per record.", "input_schema"
 
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
+
+
+def yt_enrich(r):
+    """Exact upload date and full description from the public watch page (metadata only)."""
+    if r["source"] != "youtube":
+        return r
+    try:
+        import re as _re, html as _h, json as _j
+        g = requests.get(f"https://www.youtube.com/watch?v={r['id'].split(':', 1)[1]}", headers={"User-Agent": "BallyHeritageArchive/1.0", "Accept-Language": "en"}, timeout=30)
+        d = _re.search(r'"uploadDate"\s*:\s*"([0-9-]{10})', g.text) or _re.search(r'itemprop="uploadDate" content="([0-9-]{10})', g.text)
+        sd = _re.search(r'"shortDescription":"((?:[^"\\]|\\.)*)"', g.text)
+        patch = {}
+        if d:
+            patch["date_text"] = d.group(1); patch["year"] = int(d.group(1)[:4])
+        if sd:
+            desc = _j.loads('"' + sd.group(1) + '"').strip()
+            if desc:
+                meta = (r.get("description") or "").split("Channel:")[-1]
+                patch["description"] = (desc[:1500] + " Channel:" + meta) if "Channel:" in (r.get("description") or "") else desc[:1800]
+        if patch:
+            requests.patch(f"{SB}/rest/v1/ext_records", headers={**H, "Prefer": "return=minimal"}, params={"id": f"eq.{r['id']}"}, json=patch, timeout=60)
+            r = {**r, **patch}
+    except Exception:
+        pass
+    return r
 
 
 def review(batch):
@@ -63,7 +92,7 @@ def review(batch):
 def main():
     recs, off = [], 0
     while True:
-        params = {"select": "id,source,kind,title,creator,date_text,description,thumb_path,relevance,data", "relevance": "gte.0.5", "order": "id", "limit": 1000, "offset": off}
+        params = {"select": "id,source,kind,title,creator,date_text,year,description,thumb_path,relevance,data", "relevance": "gte.0.5", "order": "id", "limit": 1000, "offset": off}
         if ONLY:
             params["source"] = f"in.({','.join(ONLY)})"
         page = requests.get(f"{SB}/rest/v1/ext_records", headers=H, params=params, timeout=60).json()
@@ -72,6 +101,9 @@ def main():
             break
     recs = [r for r in recs if not ((r.get("data") or {}).get("verify"))]
     log(len(recs), "records to verify")
+    with ThreadPoolExecutor(4) as ex:
+        recs = list(ex.map(yt_enrich, recs))
+    log("youtube dates found", sum(1 for r in recs if r["source"] == "youtube" and str(r.get("date_text") or "")[:2] in ("19", "20")))
     batches = [recs[i:i + 20] for i in range(0, len(recs), 20)]
     from collections import Counter
     tally, hidden = Counter(), []
@@ -83,7 +115,7 @@ def main():
                     tally["no_answer"] += 1; continue
                 tally[v["verdict"]] += 1
                 patch = {"data": {**(r.get("data") or {}), "verify": {"verdict": v["verdict"], "confidence": v["confidence"], "reason": v["reason"], "model": MODEL}}}
-                if v["verdict"] == "not_house" and v["confidence"] in ("high", "medium"):
+                if v["verdict"] in ("not_house", "commentary") and v["confidence"] in ("high", "medium"):
                     patch["relevance"] = 0.3; patch["ai_status"] = "hidden"
                     hidden.append(f"{r['source']}: {r.get('title')} ({v['reason']})")
                 elif v["verdict"] in ("related", "unsure"):
