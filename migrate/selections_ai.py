@@ -102,7 +102,7 @@ def main():
         a = desc.get(g) or {}
         content = [{"type": "text", "text": "You curate themed Selections for the Bally heritage archive (Swiss shoe and fashion house). "
                     "Decide strictly, from the photo and the record, whether this object belongs in each Selection below. "
-                    "When in doubt, say not_member."}]
+                    "When in doubt, say not_member. Answer by calling the selection_verdicts tool."}]
         im = img(f"thumb/{o['main_asset_guid']}.jpg") if o.get("main_asset_guid") else None
         if im:
             content.append(im)
@@ -111,7 +111,7 @@ def main():
                         "\n\nSelections to judge:\n" + "\n".join(f"[{i}] {THEMES[i][0]}: {THEMES[i][1]}" for i in ids)})
         for t in range(3):
             try:
-                m = client.messages.create(model=MODEL, max_tokens=1200, tools=[TOOL], tool_choice={"type": "tool", "name": "selection_verdicts"},
+                m = client.messages.create(model=MODEL, max_tokens=1200, tools=[TOOL], tool_choice={"type": "auto"},
                                            messages=[{"role": "user", "content": content}])
                 items = next(b.input["items"] for b in m.content if b.type == "tool_use")
                 out = []
