@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: "commons | load (JSON from data branch) | embed"
+        description: "commons | load | embed | links"
         default: "commons"
 
 concurrency:
@@ -41,4 +41,5 @@ jobs:
             commons) python migrate/ext_commons.py ;;
             load) python migrate/ext_load.py ;;
             embed) python migrate/ext_embed.py ;;
+            links) MODE=links LINK_SET=ext MODEL=claude-opus-5-5 WORKERS=6 python migrate/library_ai.py ;;
           esac

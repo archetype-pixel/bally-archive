@@ -364,14 +364,16 @@ def thumb_block(path, px=900):
 
 
 def run_links():
-    r = requests.post(f"{SB}/rest/v1/rpc/library_link_review_batch", headers=H, json={"p_limit": 1000}, timeout=300)
+    EXT = os.environ.get("LINK_SET") == "ext"
+    rpcname = "ext_link_review_batch" if EXT else "library_link_review_batch"
+    r = requests.post(f"{SB}/rest/v1/rpc/{rpcname}", headers=H, json={"p_limit": 1000}, timeout=300)
     r.raise_for_status()
     rows = r.json()
     log(len(rows), "suggested links to review")
 
     def one(k):
         try:
-            content = [{"type": "text", "text": "BOOK PHOTO (from Abegg/Matter, Bally – Hier und Jetzt):"}, thumb_block(k["plate_path"]),
+            content = [{"type": "text", "text": "PHOTO FROM AN EXTERNAL SOURCE:" if EXT else "BOOK PHOTO:"}, thumb_block(k["plate_path"]),
                        {"type": "text", "text": f"Book caption: {k.get('caption_en') or k.get('caption_de') or '(none)'}"},
                        {"type": "text", "text": "ARCHIVE OBJECT, closest photo:"}, thumb_block(k["matched_thumb"], 600)]
             for t in (k.get("other_thumbs") or [])[:2]:
@@ -392,9 +394,13 @@ def run_links():
             else:
                 status = "suggested"
             method = {"same-photo": "visual-same-photo", "same-object": "same-object", "same-model": "same-model"}.get(v, "visual")
-            patch("library_plate_links", {"plate_id": f"eq.{k['plate_id']}", "object_guid": f"eq.{k['object_guid']}"},
-                  {"status": status, "ai_verdict": f"{v}/{c}", "ai_reason": data.get("reason"), "ai_model": MODEL,
-                   **({"method": method} if status == "confirmed" else {})})
+            if EXT:
+                patch("ext_links", {"record_id": f"eq.{k['plate_id']}", "object_guid": f"eq.{k['object_guid']}"},
+                      {"status": status, "ai_verdict": f"{v}/{c}", "ai_reason": data.get("reason"), **({"method": method} if status == "confirmed" else {})})
+            else:
+                patch("library_plate_links", {"plate_id": f"eq.{k['plate_id']}", "object_guid": f"eq.{k['object_guid']}"},
+                      {"status": status, "ai_verdict": f"{v}/{c}", "ai_reason": data.get("reason"), "ai_model": MODEL,
+                       **({"method": method} if status == "confirmed" else {})})
             return status
         except Exception as e:
             log("link error", k["plate_id"], k["object_guid"], type(e).__name__, str(e)[:200])
