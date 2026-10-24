@@ -17,9 +17,13 @@ def log(*a):
 
 
 def main():
-    r = requests.get(f"{SB}/rest/v1/library_plates", headers=H, params={"select": "id,thumb_path", "order": "sort", "limit": 2000}, timeout=60)
+    r = requests.get(f"{SB}/rest/v1/library_plates", headers=H, params={"select": "id,thumb_path", "order": "sort", "limit": 2000, "rights": "eq.public"}, timeout=60)
     r.raise_for_status()
     plates = r.json()
+    have = requests.get(f"{SB}/rest/v1/library_plate_embeddings", headers=H, params={"select": "plate_id", "limit": 5000}, timeout=60).json()
+    have = {h["plate_id"] for h in have}
+    plates = [p for p in plates if p["id"] not in have]
+    log(len(plates), "plates need fingerprints")
     model, _, preprocess = open_clip.create_model_and_transforms("ViT-B-32", pretrained="openai")
     model.eval()
     emb, links = [], []

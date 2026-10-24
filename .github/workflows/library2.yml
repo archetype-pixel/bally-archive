@@ -1,0 +1,60 @@
+name: Library book 2 (Interwar footwear)
+
+on:
+  workflow_dispatch:
+    inputs:
+      steps:
+        description: "Comma list: load,ai,embed,links"
+        default: "load,ai,embed,links"
+
+concurrency:
+  group: library
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+  ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: library-data
+          path: data
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - name: Load
+        if: contains(inputs.steps, 'load')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DATA: data/interwar
+        run: python migrate/library_load2.py
+      - name: AI captions, descriptions, rights
+        if: contains(inputs.steps, 'ai')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DATA: data/interwar
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai2.py
+      - name: Fingerprints and link suggestions
+        if: contains(inputs.steps, 'embed')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/library_embed.py
+      - name: AI review of links
+        if: contains(inputs.steps, 'links')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: links
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai.py
