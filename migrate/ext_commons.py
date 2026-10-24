@@ -121,7 +121,11 @@ def put(data, path, ctype="image/jpeg"):
 
 def copy_image(rec):
     try:
-        r = requests.get(rec["url"], headers=UA, timeout=120)
+        for t in range(6):
+            r = requests.get(rec["url"], headers=UA, timeout=120)
+            if r.status_code in (429, 503):
+                time.sleep(5 * (t + 1)); continue
+            break
         r.raise_for_status()
         im = Image.open(io.BytesIO(r.content)).convert("RGB")
         im.thumbnail((1600, 1600))
@@ -163,7 +167,10 @@ def main():
                     if c["relevance"] >= 0.5:
                         kept.append(b)
     log("relevant", len(kept), "of", len(infos))
-    with ThreadPoolExecutor(8) as ex:
+    have = {x["id"] for x in requests.get(f"{SB}/rest/v1/ext_records", headers=H, params={"select": "id", "source": "eq.commons", "limit": 10000}, timeout=60).json()}
+    kept = [b for b in kept if f"commons:{b['pageid']}" not in have]
+    log("new to copy", len(kept))
+    with ThreadPoolExecutor(2) as ex:
         paths = list(ex.map(copy_image, kept))
     rows = []
     for b, (p, t, w, h) in zip(kept, paths):
