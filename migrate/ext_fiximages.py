@@ -58,6 +58,8 @@ def candidates(r):
     d = r.get("data") or {}
     s = r["source"]
     out = []  # (url, extra headers)
+    if s == "wipo-tm" and d.get("office") == "US" and d.get("application_number") and d.get("thumbnail_urls"):
+        return [(f"https://tmcms-docs.uspto.gov/cases/{d['application_number']}/mark/large.png", {})]  # official USPTO copy of the mark
     if s in ("wipo-tm", "wipo-design"):
         return []  # WIPO image host refuses automated requests; not worked around
     if s in ("patents", "uspto-pat"):
