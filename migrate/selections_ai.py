@@ -82,6 +82,8 @@ def main():
     for c in cands:
         by[c["object_guid"]].append(c["collection_id"])
     guids = list(by)
+    if os.environ.get("LIMIT"):
+        guids = guids[:int(os.environ["LIMIT"])]
     log(len(cands), "candidates on", len(guids), "objects")
     meta, desc = {}, {}
     for i in range(0, len(guids), 150):
@@ -124,8 +126,13 @@ def main():
         return []
 
     tally = Counter()
+    from concurrent.futures import as_completed
+    done = 0
     with ThreadPoolExecutor(WORKERS) as ex:
-        for res in ex.map(one, guids):
+        for fut in as_completed([ex.submit(one, g) for g in guids]):
+            res = fut.result(); done += 1
+            if done % 200 == 0:
+                log(done, "objects reviewed", sum(v for (c, st), v in tally.items() if st == "member"), "members so far")
             for cid, g, status, conf, reason in res:
                 tally[(cid, status)] += 1
                 requests.patch(f"{SB}/rest/v1/selection_members", headers={**H, "Prefer": "return=minimal"}, timeout=60,

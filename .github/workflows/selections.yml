@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       model: {description: model, default: "claude-sonnet-5-5"}
+      limit: {description: "objects to review (blank = all)", default: ""}
 
 jobs:
   review:
@@ -21,4 +22,5 @@ jobs:
           ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
           MODEL: ${{ inputs.model }}
           WORKERS: "10"
+          LIMIT: ${{ inputs.limit }}
         run: python migrate/selections_ai.py
