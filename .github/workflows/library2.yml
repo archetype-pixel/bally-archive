@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       steps:
-        description: "Comma list: load,ai,embed,links"
+        description: "Comma list: load,ai,fix,embed,links"
         default: "load,ai,embed,links"
 
 concurrency:
@@ -44,6 +44,13 @@ jobs:
           MODEL: claude-opus-5-5
           WORKERS: "6"
         run: python migrate/library_ai2.py
+      - name: Manual corrections
+        if: contains(inputs.steps, 'fix')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DATA: data/interwar
+        run: python migrate/library_fix2.py
       - name: Fingerprints and link suggestions
         if: contains(inputs.steps, 'embed')
         env:
