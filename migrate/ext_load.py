@@ -78,6 +78,8 @@ def main():
                          "image_url": ("https://patentimages.storage.googleapis.com/" + p["pdf"]) if p.get("pdf") else None,
                          "image_path": img[0] if img else None, "thumb_path": img[0] if img else None, "width": img[1] if img else None, "height": img[2] if img else None,
                          "relevance": 1.0, "ai_status": "curated", "data": p})
+    keys = set().union(*[r.keys() for r in rows])
+    rows = [{k: r.get(k) for k in keys} for r in rows]
     r = requests.post(f"{SB}/rest/v1/ext_records", headers={**H, "Prefer": "resolution=merge-duplicates,return=minimal"}, json=rows, timeout=120)
     if not r.ok:
         log(r.status_code, r.text[:300]); r.raise_for_status()
