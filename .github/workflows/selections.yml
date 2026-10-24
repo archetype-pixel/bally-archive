@@ -1,0 +1,24 @@
+name: Selections AI review
+
+on:
+  workflow_dispatch:
+    inputs:
+      model: {description: model, default: "claude-sonnet-5-5"}
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install requests Pillow anthropic
+      - env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+          MODEL: ${{ inputs.model }}
+          WORKERS: "10"
+        run: python migrate/selections_ai.py
