@@ -10,7 +10,7 @@ DATA = os.environ.get("DATA", "data/external")
 H = {"apikey": KEY, "Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
 UA = {"User-Agent": "BallyHeritageArchive/1.0 (non-commercial research archive; archetypegroup@gmail.com)"}
 KEEP = re.compile(r"bally\s+schuhfabrik|c\.\s*f\.\s*bally|bally\s+international|bally\s+schweiz|bally\s+wiener|bally\s+shoe\s+factor|bally\s+holding|bally\s+management", re.I)
-DROP = re.compile(r"gaming|wulff|midway|manufacturing|technolog|fitness|sg gaming|ricosta|rohde", re.I)
+DROP = re.compile(r"gaming|wulff|midway|manufacturing|technolog|fitness|entertainment|ricosta|rohde|rhum", re.I)
 
 
 def log(*a):
@@ -35,8 +35,9 @@ def put_img(url, path):
 
 
 def ok(applicants):
+    # files are pre-filtered to Bally-house applicants (many spellings); only guard against gaming/fitness leaks
     a = " ".join(applicants or [])
-    return bool(KEEP.search(a)) and not DROP.search(a)
+    return "bally" in a.lower() and not DROP.search(a)
 
 
 def year(s):
