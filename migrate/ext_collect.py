@@ -435,6 +435,8 @@ def main():
         cands += uniq
     have = {x["id"] for x in requests.get(f"{SB}/rest/v1/ext_records", headers=H, params={"select": "id", "limit": 20000}, timeout=60).json()}
     cands = [c for c in cands if f"{c['source']}:{c['source_id']}" not in have]
+    junk = re.compile(r"herbari|holotype|isotype|specimen|kalancho|euphorbia|monadenium|sansevieria|P\.R\.O\.\s*Bally", re.I)
+    cands = [c for c in cands if not str(c["source_id"]).startswith("/11614/") and not junk.search(f"{c.get('title')} {c.get('description')}")]
     log("new candidates", len(cands))
     kept = []
     batches = [cands[i:i + 40] for i in range(0, len(cands), 40)]
