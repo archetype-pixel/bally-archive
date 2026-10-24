@@ -2,6 +2,10 @@ name: Inventory skipped Azure folders
 
 on:
   workflow_dispatch:
+    inputs:
+      only:
+        description: comma list of dirs to walk (blank = all not yet listed)
+        default: ""
 
 concurrency:
   group: az-explore
@@ -24,4 +28,5 @@ jobs:
           AZ_KEY: ${{ secrets.AZ_KEY }}
           SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ONLY: ${{ inputs.only }}
         run: python migrate/az_explore.py

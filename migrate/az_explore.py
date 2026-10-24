@@ -52,7 +52,9 @@ def main():
     dam = ls("DAM")
     log("DAM TOP:", [(x["name"], "dir" if x["is_directory"] else x.get("size")) for x in dam])
     stack = [x["name"] for x in root if x["is_directory"] and x["name"] != "DAM"]
-    stack += [f"DAM/{x['name']}" for x in dam if x["is_directory"] and not f"DAM/{x['name']}".startswith(DONE)]
+    stack += [f"DAM/{x['name']}" for x in dam if x["is_directory"] and f"DAM/{x['name']}" not in DONE]
+    if os.environ.get("ONLY"):
+        stack = [d for d in os.environ["ONLY"].split(",") if d]
     loose = [{"path": f"DAM/{x['name']}", "dir": "DAM", "name": x["name"], "size": x.get("size")} for x in dam if not x["is_directory"]]
     loose += [{"path": x["name"], "dir": "", "name": x["name"], "size": x.get("size")} for x in root if not x["is_directory"]]
     upsert(loose)
