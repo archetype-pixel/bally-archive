@@ -1,0 +1,44 @@
+name: External sources
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "commons | load (JSON from data branch) | embed"
+        default: "commons"
+
+concurrency:
+  group: ext
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+  ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: library-data
+          path: data
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - if: inputs.source == 'embed'
+        run: pip install open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DATA: data/external
+          SOURCE: ${{ inputs.source }}
+        run: |
+          case "$SOURCE" in
+            commons) python migrate/ext_commons.py ;;
+            load) python migrate/ext_load.py ;;
+            embed) python migrate/ext_embed.py ;;
+          esac
