@@ -34,6 +34,26 @@ def gpatent_drawing(num):
         return []
 
 
+def depatis_drawing(num):
+    """German Patent Office DEPATISnet: public PDF of the patent; render the drawing sheet (last page) as an image."""
+    m = re.match(r"^([A-Z]{2})(\d+)([A-Z]\d?)$", num or "")
+    if not m:
+        return None
+    docid = f"{m.group(1)}{m.group(2).zfill(12)}{m.group(3)}"
+    try:
+        r = requests.get("https://depatisnet.dpma.de/DepatisNet/depatisnet", params={"action": "pdf", "firstdoc": 0, "docid": docid}, headers=UA, timeout=90)
+        if not r.ok or not r.content.startswith(b"%PDF"):
+            return None
+        import fitz
+        doc = fitz.open(stream=r.content, filetype="pdf")
+        page = doc[doc.page_count - 1] if doc.page_count > 1 else doc[0]
+        pix = page.get_pixmap(dpi=110)
+        time.sleep(1)
+        return pix.tobytes("png")
+    except Exception:
+        return None
+
+
 def candidates(r):
     d = r.get("data") or {}
     s = r["source"]
@@ -99,6 +119,21 @@ def fix(r):
         except Exception as e:
             last = type(e).__name__
             continue
+    if r["source"] in ("patents", "uspto-pat"):
+        png = depatis_drawing(r["source_id"] if r["source"] == "patents" else "US" + re.sub(r"[^0-9]", "", str(r.get("source_id") or "")) + "A")
+        if png:
+            try:
+                im = Image.open(io.BytesIO(png)).convert("RGB")
+                key = hashlib.sha1(r["id"].encode()).hexdigest()[:16]
+                big = im.copy(); big.thumbnail((1600, 1600)); b = io.BytesIO(); big.save(b, "JPEG", quality=86)
+                put(b.getvalue(), f"external/{r['source']}/{key}.jpg")
+                t = im.copy(); t.thumbnail((400, 400)); b2 = io.BytesIO(); t.save(b2, "JPEG", quality=82)
+                put(b2.getvalue(), f"external/{r['source']}/thumbs/{key}.jpg")
+                requests.patch(f"{SB}/rest/v1/ext_records", headers={**H, "Prefer": "return=minimal"}, params={"id": f"eq.{r['id']}"},
+                               json={"image_path": f"external/{r['source']}/{key}.jpg", "thumb_path": f"external/{r['source']}/thumbs/{key}.jpg", "width": big.width, "height": big.height}, timeout=60).raise_for_status()
+                return r["source"], True, None
+            except Exception:
+                pass
     return r["source"], False, f"{len(candidates(r))} candidates"
 
 
@@ -111,7 +146,7 @@ def main():
     log(len(recs), "records missing images")
     from collections import Counter
     got, miss = Counter(), Counter()
-    with ThreadPoolExecutor(6) as ex:
+    with ThreadPoolExecutor(3) as ex:
         for src, ok, why in ex.map(fix, recs):
             (got if ok else miss)[src] += 1
     log("fixed", dict(got))
