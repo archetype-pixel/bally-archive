@@ -57,7 +57,7 @@ def make_asset(obj, path, name, order):
                                  "raw": {"recovered_from": path}})
     rest("POST", "file_copy", json={"asset_id": -(uuid.UUID(g).int % 10**12), "guid": g, "name": name, "azure_path": path, "azure_size": len(raw),
                                     "match_note": "recovered: on share, not linked", "status": "copied", "dest_original": f"originals/{g}/{name}",
-                                    "dest_display": f"display/{g}.jpg", "dest_thumb": f"thumb/{g}.jpg", "width": im.width, "height": im.height, "shard": 0})
+                                    "dest_display": f"display/{g}.jpg", "dest_thumb": f"thumb/{g}.jpg", "width": im.width, "height": im.height})
     rest("POST", "object_assets", json={"object_guid": obj, "asset_guid": g, "sort_order": order, "source": "recovered_share"})
     return g, im
 
@@ -74,8 +74,14 @@ def main():
             if f["frame"] is not None:
                 shoots[f["sn"]][f["frame"]] = f
         order, main = 100, None
+        done = {a["raw"]["recovered_from"]: a["guid"] for a in requests.get(f"{SB}/rest/v1/assets", headers=H, timeout=60,
+                params={"select": "guid,raw", "raw->>recovered_from": "not.is.null"}).json()}
         for f in stills:
-            g, _ = make_asset(obj, f["path"], f["name"], order); order += 1
+            if f["path"] in done:
+                g = done[f["path"]]
+            else:
+                g, _ = make_asset(obj, f["path"], f["name"], order)
+            order += 1
             main = main or g
         for sn, fr in shoots.items():
             if len(fr) < 20:
