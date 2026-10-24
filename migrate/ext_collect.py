@@ -156,7 +156,8 @@ FILTER_TOOL = {"name": "classify", "description": "Classify candidate records.",
 
 
 def classify(batch):
-    lines = [f"[{i}] source {b['source']} | {b['title']} | {(b['description'] or '')[:350]} | date {b.get('date_text')} | creator {b.get('creator')} | type {b.get('kind_hint','')}" for i, b in enumerate(batch)]
+    s = lambda v: " ".join(map(str, v)) if isinstance(v, list) else str(v or "")
+    lines = [f"[{i}] source {b['source']} | {s(b.get('title'))} | {s(b.get('description'))[:350]} | date {s(b.get('date_text'))} | creator {s(b.get('creator'))} | type {s(b.get('kind_hint'))}" for i, b in enumerate(batch)]
     for _ in range(3):
         try:
             msg = client.messages.create(model="claude-haiku-5-5", max_tokens=8000, tools=[FILTER_TOOL], tool_choice={"type": "tool", "name": "classify"},
