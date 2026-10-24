@@ -15,7 +15,8 @@ MODE = os.environ.get("MODE", "plates")
 MODEL = os.environ.get("MODEL", "claude-opus-5-5")
 PART = os.environ.get("PART", "")
 WORKERS = int(os.environ.get("WORKERS", "4"))
-PUB = "hier-und-jetzt"
+PUB = os.environ.get("PUB") or "hier-und-jetzt"
+BOOK = os.environ.get("BOOK_LABEL") or "Abegg/Matter, Bally – Hier und Jetzt (2025)"
 H = {"apikey": KEY, "Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
 WS = os.environ.get("ANTHROPIC_WORKSPACE_ID", "")
 client = anthropic.Anthropic(max_retries=8, default_headers={"anthropic-workspace-id": WS} if WS else None)
@@ -68,6 +69,7 @@ GLOSSARY = """Conventions for this book (Swiss company history of Bally, Schöne
 - Guillemets «...» become English double quotes “...”; nested ‹...› become ‘...’. Quotations from sources: translate them, keep quotation marks.
 - Swiss-German words quoted in the original («Lismen») stay in the original with the English meaning added in brackets if the German gives it.
 - Use American spelling (color, center) and plain, natural English."""
+GLOSSARY += ("\n" + os.environ["GLOSSARY_EXTRA"]) if os.environ.get("GLOSSARY_EXTRA") else ""
 
 
 # ---------------------------------------------------------------- translation
@@ -100,7 +102,7 @@ def run_translate():
     todo = [r for r in rows if not r["text_en"]]
     log("part", PART, len(rows), "passages", len(todo), "to translate")
     parts = {p["no"]: p for p in get("library_parts", {"select": "*", "pub": f"eq.{PUB}"})}
-    head = f"Book: Abegg/Matter, Bally – Hier und Jetzt (2025). Part {PART}: {parts.get(int(PART), {}).get('title_de', '')}" if PART != "0" else "Book front matter and picture-essay introductions."
+    head = f"Book: {BOOK}. Part {PART}: {parts.get(int(PART), {}).get('title_de', '')}" if PART != "0" else "Book front matter and picture-essay introductions."
     ctx = ""
     done_en = {r["id"]: r["text_en"] for r in rows if r["text_en"]}
     batch, size = [], 0
@@ -226,7 +228,7 @@ def plate_one(pl, ctx_text):
     hint = ""
     if pl.get("caption_de"):
         hint = f"Layout matching suggests this caption: {pl['caption_de'][:200]!r}. Confirm only if it truly fits the photo."
-    text = (f"Book: Abegg/Matter, Bally – Hier und Jetzt (2025). This photo is on page {pl['page']}"
+    text = (f"Book: {BOOK}. This photo is on page {pl['page']}"
             f"{' (picture essay)' if pl['essay'] else ''}, position {pl['idx']} on the page, figure label {pl['fig_no']}.\n"
             f"{hint}\nCandidate German captions:\n" + ("\n".join(lines) or "(none)") +
             f"\n\nSurrounding book text (German, for context):\n{ctx_text[:2500]}")
@@ -251,7 +253,7 @@ def run_plates():
         return "\n".join(p["text_de"] for p in passages if set(p.get("pages") or [p["page"]]) & set(s))
 
     def one(pl):
-        if (pl.get("caption_source") or "").startswith("essay-") and pl.get("caption_de"):
+        if ((pl.get("caption_source") or "").startswith("essay-") or os.environ.get("FIXED_CAPTIONS") == "1") and pl.get("caption_de"):
             # caption already fixed by the joint essay assignment: describe against it only
             pl = dict(pl, caption_candidates=[{"ref": pl["page"], "de": pl["caption_de"]}])
         try:

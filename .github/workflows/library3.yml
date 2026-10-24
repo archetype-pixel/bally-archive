@@ -1,0 +1,147 @@
+name: Library book 3 (Auf Schritt und Tritt)
+
+on:
+  workflow_dispatch:
+    inputs:
+      steps:
+        description: "Comma list: load,translate,notes,plates,headings,summaries,embed,links"
+        default: "load,translate,notes,plates,headings,summaries,embed,links"
+      skip_storage:
+        description: "1 = skip image uploads on load"
+        default: "0"
+
+concurrency:
+  group: library
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+  ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+  PUB: schritt-und-tritt
+  BOOK_LABEL: "Roman Wild, Auf Schritt und Tritt. Der schweizerische Schuhmarkt 1918-1948 (NZZ Libro, 2019), a history of the whole Swiss shoe market (shoemakers, retailers, Bally, Bata, consumers, cartels, market research)"
+  GLOSSARY_EXTRA: "Book-specific terms: Störschuhmacher = itinerant shoemaker (who worked in customers' homes); Schuhgewerbe = shoe trade (craft shoemakers and retailers); Schuhindustrie = shoe industry (factories); Schuhwirtschaft = shoe economy / shoe business; Volksschuh = 'people's shoe' (keep Volksschuh in quotes the first time); Massschuhmacher = custom shoemaker; Flickschuster = cobbler; Verband schweizerischer Schuhindustrieller (VSS) and other association names: keep the German name, add the English in brackets only the first time in a passage; Hausfrauen = housewives; KonsumentInnen = consumers; Marktforschung = market research; GfM = Gesellschaft für Marktforschung; Kurzbelege = short references. Keep in-text citation forms and gender-inclusive forms (SchülerInnen) as natural English (pupils). Superscript note numbers (¹²³) stay exactly where they are in the text."
+
+jobs:
+  load:
+    if: contains(inputs.steps, 'load')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: library-data
+          path: data
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DATA: data/book3
+          SKIP_STORAGE: ${{ inputs.skip_storage }}
+        run: python migrate/library_load3.py
+
+  translate:
+    needs: load
+    if: always() && contains(inputs.steps, 'translate') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        part: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: translate
+          MODEL: claude-opus-5-5
+          PART: ${{ matrix.part }}
+        run: python migrate/library_ai.py
+
+  notes:
+    needs: load
+    if: always() && contains(inputs.steps, 'notes') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: notes
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai.py
+
+  plates:
+    needs: load
+    if: always() && contains(inputs.steps, 'plates') && needs.load.result != 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic
+      - env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: plates
+          FIXED_CAPTIONS: "1"
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai.py
+
+  finish:
+    needs: [translate, notes, plates]
+    if: always() && (contains(inputs.steps, 'headings') || contains(inputs.steps, 'summaries') || contains(inputs.steps, 'embed') || contains(inputs.steps, 'links'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 anthropic open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - name: Headings
+        if: contains(inputs.steps, 'headings')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: headings
+          MODEL: claude-opus-5-5
+        run: python migrate/library_ai.py
+      - name: Summaries
+        if: contains(inputs.steps, 'summaries')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_summaries.py
+      - name: Fingerprints and link suggestions
+        if: contains(inputs.steps, 'embed')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/library_embed.py
+      - name: AI review of links
+        if: contains(inputs.steps, 'links')
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODE: links
+          MODEL: claude-opus-5-5
+          WORKERS: "6"
+        run: python migrate/library_ai.py
