@@ -376,15 +376,16 @@ def run_links():
     def one(k):
         try:
             content = [{"type": "text", "text": "PHOTO FROM AN EXTERNAL SOURCE:" if EXT else "BOOK PHOTO:"}, thumb_block(k["plate_path"]),
-                       {"type": "text", "text": f"Book caption: {k.get('caption_en') or k.get('caption_de') or '(none)'}"},
+                       {"type": "text", "text": f"{'Reference' if EXT else 'Book'} caption: {k.get('caption_en') or k.get('caption_de') or '(none)'}"},
                        {"type": "text", "text": "ARCHIVE OBJECT, closest photo:"}, thumb_block(k["matched_thumb"], 600)]
             for t in (k.get("other_thumbs") or [])[:2]:
                 if t and t != k["matched_thumb"]:
                     content += [{"type": "text", "text": "Another photo of the same archive object:"}, thumb_block(t, 400)]
             meta = {x: k.get(x) for x in ("object_code", "category", "subcategory", "model_name", "date_from", "date_to", "description", "colors", "tags") if k.get(x)}
             content.append({"type": "text", "text": "Archive record: " + json.dumps(meta, ensure_ascii=False) +
-                            "\nDo the book photo and the archive object show the same thing? Judge by construction, shape, colour, "
-                            "materials, details, text and setting. Book studio photos may be lit and cropped differently from archive photos."})
+                            f"\nDo the {'reference' if EXT else 'book'} photo and the archive object show the same thing? Judge by construction, shape, colour, "
+                            "materials, details, text and setting. Studio photos may be lit and cropped differently from archive photos."
+                            + (" Refer to the first image as 'the reference', never 'the book'." if EXT else "")})
             data, _ = call(model=MODEL, max_tokens=600, system="You compare museum photographs for the Bally heritage archive. Be strict: "
                            "only call it the same object or model when the details match.", tools=[LK_TOOL],
                            messages=[{"role": "user", "content": content}])
