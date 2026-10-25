@@ -1,0 +1,17 @@
+name: EXIF probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install azure-storage-file-share requests Pillow
+      - env:
+          AZ_ACCOUNT: ballydigitalassets
+          AZ_SHARE: azuweubllssa
+          AZ_KEY: ${{ secrets.AZ_KEY }}
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/exif_probe.py
