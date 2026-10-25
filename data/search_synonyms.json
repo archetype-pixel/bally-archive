@@ -1,0 +1,6078 @@
+[
+{
+"term": "shoe",
+"expand": [
+"shoes",
+"footwear",
+"schuh",
+"schuhe",
+"schuhwerk",
+"chaussure",
+"chaussures",
+"soulier",
+"scarpa",
+"scarpe",
+"calzature"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "shoes",
+"expand": [
+"shoe",
+"footwear",
+"schuh",
+"schuhe",
+"schuhwerk",
+"chaussure",
+"chaussures",
+"soulier",
+"scarpa",
+"scarpe",
+"calzature"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schuh",
+"expand": [
+"shoe",
+"shoes",
+"footwear",
+"schuhe",
+"schuhwerk",
+"chaussure",
+"chaussures",
+"soulier",
+"scarpa",
+"scarpe",
+"calzature"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "chaussure",
+"expand": [
+"shoe",
+"shoes",
+"footwear",
+"schuh",
+"schuhe",
+"schuhwerk",
+"chaussures",
+"soulier",
+"scarpa",
+"scarpe",
+"calzature"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "scarpa",
+"expand": [
+"shoe",
+"shoes",
+"footwear",
+"schuh",
+"schuhe",
+"schuhwerk",
+"chaussure",
+"chaussures",
+"soulier",
+"scarpe",
+"calzature"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "boot",
+"expand": [
+"boots",
+"stiefel",
+"stiefeln",
+"botte",
+"bottes"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "boots",
+"expand": [
+"boot",
+"stiefel",
+"stiefeln",
+"botte",
+"bottes"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stiefel",
+"expand": [
+"boot",
+"boots",
+"stiefeln",
+"botte",
+"bottes"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "botte",
+"expand": [
+"boot",
+"boots",
+"stiefel",
+"stiefeln",
+"bottes"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "stivale",
+"expand": [
+"boot",
+"boots",
+"stiefel",
+"stiefeln",
+"botte",
+"bottes"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "ankle boot",
+"expand": [
+"ankle boots",
+"bootie",
+"booties",
+"bootee",
+"stiefelette",
+"stiefeletten",
+"bottine",
+"bottinen",
+"bottines"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ankle boots",
+"expand": [
+"ankle boot",
+"bootie",
+"booties",
+"bootee",
+"stiefelette",
+"stiefeletten",
+"bottine",
+"bottinen",
+"bottines"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "bootie",
+"expand": [
+"ankle boot",
+"ankle boots",
+"booties",
+"bootee",
+"stiefelette",
+"stiefeletten",
+"bottine",
+"bottinen",
+"bottines"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "booties",
+"expand": [
+"ankle boot",
+"ankle boots",
+"bootie",
+"bootee",
+"stiefelette",
+"stiefeletten",
+"bottine",
+"bottinen",
+"bottines"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stiefelette",
+"expand": [
+"ankle boot",
+"ankle boots",
+"bootie",
+"booties",
+"bootee",
+"stiefeletten",
+"bottine",
+"bottinen",
+"bottines"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "bottine",
+"expand": [
+"ankle boot",
+"ankle boots",
+"bootie",
+"booties",
+"bootee",
+"stiefelette",
+"stiefeletten",
+"bottinen",
+"bottines"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "chelsea boot",
+"expand": [
+"chelsea boots",
+"elastic sided boot",
+"gusset boot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "chelsea boots",
+"expand": [
+"chelsea boot",
+"elastic sided boot",
+"gusset boot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "winter boot",
+"expand": [
+"winter boots",
+"snow boot",
+"snow boots",
+"winterstiefel",
+"fellstiefel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "winter boots",
+"expand": [
+"winter boot",
+"snow boot",
+"snow boots",
+"winterstiefel",
+"fellstiefel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "snow boots",
+"expand": [
+"winter boot",
+"winter boots",
+"snow boot",
+"winterstiefel",
+"fellstiefel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "riding boot",
+"expand": [
+"riding boots",
+"equestrian boot",
+"kavalleriestiefel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "pump",
+"expand": [
+"pumps",
+"court shoe",
+"court shoes",
+"escarpin",
+"escarpins",
+"decollete"
+],
+"lang": "en",
+"note": "US pump = UK court shoe",
+"kind": "synonym"
+},
+{
+"term": "pumps",
+"expand": [
+"pump",
+"court shoe",
+"court shoes",
+"escarpin",
+"escarpins",
+"decollete"
+],
+"lang": "en",
+"note": "US pump = UK court shoe",
+"kind": "synonym"
+},
+{
+"term": "court shoe",
+"expand": [
+"pump",
+"pumps",
+"court shoes",
+"escarpin",
+"escarpins",
+"decollete"
+],
+"lang": "en",
+"note": "US pump = UK court shoe",
+"kind": "synonym"
+},
+{
+"term": "court shoes",
+"expand": [
+"pump",
+"pumps",
+"court shoe",
+"escarpin",
+"escarpins",
+"decollete"
+],
+"lang": "en",
+"note": "US pump = UK court shoe",
+"kind": "synonym"
+},
+{
+"term": "escarpin",
+"expand": [
+"pump",
+"pumps",
+"court shoe",
+"court shoes",
+"escarpins",
+"decollete"
+],
+"lang": "fr",
+"note": "US pump = UK court shoe",
+"kind": "synonym"
+},
+{
+"term": "decollete",
+"expand": [
+"pump",
+"pumps",
+"court shoe",
+"court shoes",
+"escarpin",
+"escarpins"
+],
+"lang": "it",
+"note": "US pump = UK court shoe",
+"kind": "synonym"
+},
+{
+"term": "high heel",
+"expand": [
+"high heels",
+"heeled shoe",
+"hoher absatz",
+"hohem absatz",
+"talon haut",
+"talons hauts"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "high heels",
+"expand": [
+"high heel",
+"heeled shoe",
+"hoher absatz",
+"hohem absatz",
+"talon haut",
+"talons hauts"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "hoher absatz",
+"expand": [
+"high heel",
+"high heels",
+"heeled shoe",
+"hohem absatz",
+"talon haut",
+"talons hauts"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "stiletto",
+"expand": [
+"stilettos",
+"stiletto heel",
+"spike heel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stilettos",
+"expand": [
+"stiletto",
+"stiletto heel",
+"spike heel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sandal",
+"expand": [
+"sandals",
+"sandale",
+"sandalen",
+"sandales"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sandals",
+"expand": [
+"sandal",
+"sandale",
+"sandalen",
+"sandales"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sandale",
+"expand": [
+"sandal",
+"sandals",
+"sandalen",
+"sandales"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "heeled sandal",
+"expand": [
+"heeled sandals",
+"sandalette",
+"sandalettes",
+"sandaletten"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sandalette",
+"expand": [
+"heeled sandal",
+"heeled sandals",
+"sandalettes",
+"sandaletten"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "strappy sandal",
+"expand": [
+"strap sandal",
+"bridensandale",
+"bridensandalen",
+"bridensandaletten"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "bridensandale",
+"expand": [
+"strappy sandal",
+"strap sandal",
+"bridensandalen",
+"bridensandaletten"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "slipper",
+"expand": [
+"slippers",
+"house shoe",
+"house shoes",
+"house slipper",
+"pantoffel",
+"hausschuhe",
+"finken",
+"pantoufle",
+"pantoufles"
+],
+"lang": "en",
+"note": "German Slipper usually means slip-on, see loafer",
+"kind": "synonym"
+},
+{
+"term": "slippers",
+"expand": [
+"slipper",
+"house shoe",
+"house shoes",
+"house slipper",
+"pantoffel",
+"hausschuhe",
+"finken",
+"pantoufle",
+"pantoufles"
+],
+"lang": "en",
+"note": "German Slipper usually means slip-on, see loafer",
+"kind": "synonym"
+},
+{
+"term": "pantoffel",
+"expand": [
+"slipper",
+"slippers",
+"house shoe",
+"house shoes",
+"house slipper",
+"hausschuhe",
+"finken",
+"pantoufle",
+"pantoufles"
+],
+"lang": "de",
+"note": "German Slipper usually means slip-on, see loafer",
+"kind": "synonym"
+},
+{
+"term": "hausschuh",
+"expand": [
+"slipper",
+"slippers",
+"house shoe",
+"house shoes",
+"house slipper",
+"pantoffel",
+"hausschuhe",
+"finken",
+"pantoufle",
+"pantoufles"
+],
+"lang": "de",
+"note": "German Slipper usually means slip-on, see loafer",
+"kind": "synonym"
+},
+{
+"term": "pantoufle",
+"expand": [
+"slipper",
+"slippers",
+"house shoe",
+"house shoes",
+"house slipper",
+"pantoffel",
+"hausschuhe",
+"finken",
+"pantoufles"
+],
+"lang": "fr",
+"note": "German Slipper usually means slip-on, see loafer",
+"kind": "synonym"
+},
+{
+"term": "mule",
+"expand": [
+"mules",
+"backless shoe",
+"sabot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "mules",
+"expand": [
+"mule",
+"backless shoe",
+"sabot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sabot",
+"expand": [
+"mule",
+"mules",
+"backless shoe",
+"clog",
+"clogs",
+"zoccoli",
+"holzzoccoli",
+"korkzoccoli"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "clog",
+"expand": [
+"clogs",
+"zoccoli",
+"holzzoccoli",
+"korkzoccoli",
+"sabot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "clogs",
+"expand": [
+"clog",
+"zoccoli",
+"holzzoccoli",
+"korkzoccoli",
+"sabot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "zoccoli",
+"expand": [
+"clog",
+"clogs",
+"holzzoccoli",
+"korkzoccoli",
+"sabot"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "loafer",
+"expand": [
+"loafers",
+"penny loafer",
+"penny loafers",
+"slip-on",
+"slip-ons",
+"slipper",
+"mocassin",
+"mocassins"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "loafers",
+"expand": [
+"loafer",
+"penny loafer",
+"penny loafers",
+"slip-on",
+"slip-ons",
+"slipper",
+"mocassin",
+"mocassins"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "penny loafer",
+"expand": [
+"loafer",
+"loafers",
+"penny loafers",
+"slip-on",
+"slip-ons",
+"slipper",
+"mocassin",
+"mocassins"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "slip-on",
+"expand": [
+"loafer",
+"loafers",
+"penny loafer",
+"penny loafers",
+"slip-ons",
+"slipper",
+"mocassin",
+"mocassins"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "mocassin",
+"expand": [
+"loafer",
+"loafers",
+"penny loafer",
+"penny loafers",
+"slip-on",
+"slip-ons",
+"slipper",
+"mocassins",
+"moccasin",
+"moccasins",
+"moccassin",
+"mocasin"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "moccasin",
+"expand": [
+"moccasins",
+"moccassin",
+"mocasin",
+"mocassin",
+"mocassins"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "moccassin",
+"expand": [
+"moccasin",
+"moccasins",
+"mocasin",
+"mocassin",
+"mocassins"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sneaker",
+"expand": [
+"sneakers",
+"sneeker",
+"sneekers",
+"trainer",
+"trainers",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"turnschuhe",
+"baskets"
+],
+"lang": "en",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "sneakers",
+"expand": [
+"sneaker",
+"sneeker",
+"sneekers",
+"trainer",
+"trainers",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"turnschuhe",
+"baskets"
+],
+"lang": "en",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "sneeker",
+"expand": [
+"sneaker",
+"sneakers",
+"sneekers",
+"trainer",
+"trainers",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"turnschuhe",
+"baskets"
+],
+"lang": "en",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "trainer",
+"expand": [
+"sneaker",
+"sneakers",
+"sneeker",
+"sneekers",
+"trainers",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"turnschuhe",
+"baskets"
+],
+"lang": "en",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "trainers",
+"expand": [
+"sneaker",
+"sneakers",
+"sneeker",
+"sneekers",
+"trainer",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"turnschuhe",
+"baskets"
+],
+"lang": "en",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "turnschuhe",
+"expand": [
+"sneaker",
+"sneakers",
+"sneeker",
+"sneekers",
+"trainer",
+"trainers",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"baskets"
+],
+"lang": "de",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "baskets",
+"expand": [
+"sneaker",
+"sneakers",
+"sneeker",
+"sneekers",
+"trainer",
+"trainers",
+"running shoe",
+"running shoes",
+"athletic shoe",
+"turnschuhe"
+],
+"lang": "fr",
+"note": "US sneaker = UK trainer",
+"kind": "synonym"
+},
+{
+"term": "espadrille",
+"expand": [
+"espadrilles"
+],
+"lang": "en",
+"note": "Spanish alpargata",
+"kind": "synonym"
+},
+{
+"term": "espadrilles",
+"expand": [
+"espadrille"
+],
+"lang": "en",
+"note": "Spanish alpargata",
+"kind": "synonym"
+},
+{
+"term": "ballet flat",
+"expand": [
+"ballet flats",
+"ballerina",
+"ballerinas",
+"ballerina flat",
+"ballet pump",
+"ballet pumps"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ballet flats",
+"expand": [
+"ballet flat",
+"ballerina",
+"ballerinas",
+"ballerina flat",
+"ballet pump",
+"ballet pumps"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ballerinas",
+"expand": [
+"ballet flat",
+"ballet flats",
+"ballerina",
+"ballerina flat",
+"ballet pump",
+"ballet pumps"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ballerina",
+"expand": [
+"ballet flat",
+"ballet flats",
+"ballerinas",
+"ballerina flat",
+"ballet pump",
+"ballet pumps"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "oxford",
+"expand": [
+"oxfords",
+"balmoral",
+"oxford shoe",
+"richelieu",
+"richelieus"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "oxfords",
+"expand": [
+"oxford",
+"balmoral",
+"oxford shoe",
+"richelieu",
+"richelieus"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "richelieu",
+"expand": [
+"oxford",
+"oxfords",
+"balmoral",
+"oxford shoe",
+"richelieus"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "derby",
+"expand": [
+"derbies",
+"derby shoe",
+"blucher",
+"bluchers"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "derbies",
+"expand": [
+"derby",
+"derby shoe",
+"blucher",
+"bluchers"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "brogue",
+"expand": [
+"brogues",
+"wingtip",
+"wingtips",
+"wing tip",
+"full brogue"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "brogues",
+"expand": [
+"brogue",
+"wingtip",
+"wingtips",
+"wing tip",
+"full brogue"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wingtip",
+"expand": [
+"brogue",
+"brogues",
+"wingtips",
+"wing tip",
+"full brogue",
+"wing cap"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lace-up",
+"expand": [
+"lace-ups",
+"laced shoe",
+"lace-up shoe",
+"schnurschuh"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lace-ups",
+"expand": [
+"lace-up",
+"laced shoe",
+"lace-up shoe",
+"schnurschuh"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lace up",
+"expand": [
+"lace-ups",
+"laced shoe",
+"lace-up shoe",
+"schnurschuh"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schnurschuh",
+"expand": [
+"lace-up",
+"lace-ups",
+"laced shoe",
+"lace-up shoe"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "monk strap",
+"expand": [
+"monk straps",
+"monkstrap",
+"monkstraps",
+"monk shoe",
+"double monk"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "monkstrap",
+"expand": [
+"monk strap",
+"monk straps",
+"monkstraps",
+"monk shoe",
+"double monk"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "mary jane",
+"expand": [
+"mary janes",
+"bar shoe",
+"strap shoe",
+"strap shoes",
+"one bar",
+"bridenschuh",
+"bridenschuhe",
+"babies",
+"salome"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "mary janes",
+"expand": [
+"mary jane",
+"bar shoe",
+"strap shoe",
+"strap shoes",
+"one bar",
+"bridenschuh",
+"bridenschuhe",
+"babies",
+"salome"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "spangenschuh",
+"expand": [
+"mary jane",
+"mary janes",
+"bar shoe",
+"strap shoe",
+"strap shoes",
+"one bar",
+"bridenschuh",
+"bridenschuhe",
+"babies",
+"salome"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "salome",
+"expand": [
+"mary jane",
+"mary janes",
+"bar shoe",
+"strap shoe",
+"strap shoes",
+"one bar",
+"bridenschuh",
+"bridenschuhe",
+"babies"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "slingback",
+"expand": [
+"slingbacks",
+"sling back",
+"sling backs"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "slingbacks",
+"expand": [
+"slingback",
+"sling back",
+"sling backs"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "platform shoe",
+"expand": [
+"platform shoes",
+"platforms",
+"plateausohle",
+"plattformsohle",
+"semelle compensee",
+"plateforme",
+"plateau"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wedge",
+"expand": [
+"wedges",
+"wedge heel",
+"wedge sandal",
+"keilabsatz",
+"keilabsatze",
+"strohkeilabsatz",
+"talon compense",
+"compensee",
+"compense"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wedges",
+"expand": [
+"wedge",
+"wedge heel",
+"wedge sandal",
+"keilabsatz",
+"keilabsatze",
+"strohkeilabsatz",
+"talon compense",
+"compensee",
+"compense"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "keilabsatz",
+"expand": [
+"wedge",
+"wedges",
+"wedge heel",
+"wedge sandal",
+"keilabsatze",
+"strohkeilabsatz",
+"talon compense",
+"compensee",
+"compense"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "evening shoe",
+"expand": [
+"evening shoes",
+"evening pump",
+"dress pump",
+"abendschuh",
+"abendschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "evening shoes",
+"expand": [
+"evening shoe",
+"evening pump",
+"dress pump",
+"abendschuh",
+"abendschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "abendschuh",
+"expand": [
+"evening shoe",
+"evening shoes",
+"evening pump",
+"dress pump",
+"abendschuhe"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "golf shoe",
+"expand": [
+"golf shoes",
+"golfschuhe",
+"golfgarnitur",
+"golfgarniture"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "golf shoes",
+"expand": [
+"golf shoe",
+"golfschuhe",
+"golfgarnitur",
+"golfgarniture"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "golfschuh",
+"expand": [
+"golf shoe",
+"golf shoes",
+"golfschuhe",
+"golfgarnitur",
+"golfgarniture"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "golfschuhe",
+"expand": [
+"golf shoe",
+"golf shoes",
+"golfgarnitur",
+"golfgarniture"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "ski boot",
+"expand": [
+"ski boots",
+"ski shoe",
+"ski shoes",
+"skischuh",
+"skischuhe",
+"skistiefel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ski boots",
+"expand": [
+"ski boot",
+"ski shoe",
+"ski shoes",
+"skischuh",
+"skischuhe",
+"skistiefel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "skischuh",
+"expand": [
+"ski boot",
+"ski boots",
+"ski shoe",
+"ski shoes",
+"skischuhe",
+"skistiefel"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "hiking boot",
+"expand": [
+"hiking boots",
+"hiking shoe",
+"walking boot",
+"walking boots",
+"mountain boot",
+"mountain boots",
+"climbing boot",
+"mountaineering boot",
+"bergschuhe",
+"wanderschuh",
+"wanderschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "hiking boots",
+"expand": [
+"hiking boot",
+"hiking shoe",
+"walking boot",
+"walking boots",
+"mountain boot",
+"mountain boots",
+"climbing boot",
+"mountaineering boot",
+"bergschuhe",
+"wanderschuh",
+"wanderschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "bergschuh",
+"expand": [
+"hiking boot",
+"hiking boots",
+"hiking shoe",
+"walking boot",
+"walking boots",
+"mountain boot",
+"mountain boots",
+"climbing boot",
+"mountaineering boot",
+"bergschuhe",
+"wanderschuh",
+"wanderschuhe"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "tennis shoe",
+"expand": [
+"tennis shoes",
+"tennisschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tennis shoes",
+"expand": [
+"tennis shoe",
+"tennisschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tennisschuhe",
+"expand": [
+"tennis shoe",
+"tennis shoes"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "boat shoe",
+"expand": [
+"boat shoes",
+"deck shoe",
+"deck shoes",
+"sailing shoe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "boat shoes",
+"expand": [
+"boat shoe",
+"deck shoe",
+"deck shoes",
+"sailing shoe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "deck shoe",
+"expand": [
+"boat shoe",
+"boat shoes",
+"deck shoes",
+"sailing shoe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "deck shoes",
+"expand": [
+"boat shoe",
+"boat shoes",
+"deck shoe",
+"sailing shoe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "orthopedic",
+"expand": [
+"orthopaedic",
+"orthopedic shoe",
+"comfort shoe",
+"health shoe",
+"fussbett",
+"fussbettsandale",
+"sanoform"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "orthopaedic",
+"expand": [
+"orthopedic",
+"orthopedic shoe",
+"comfort shoe",
+"health shoe",
+"fussbett",
+"fussbettsandale",
+"sanoform"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sanoform",
+"expand": [
+"orthopedic",
+"orthopaedic",
+"orthopedic shoe",
+"comfort shoe",
+"health shoe",
+"fussbett",
+"fussbettsandale"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "bag",
+"expand": [
+"bags",
+"tasche",
+"taschen",
+"sac",
+"sacs"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "bags",
+"expand": [
+"bag",
+"tasche",
+"taschen",
+"sac",
+"sacs"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tasche",
+"expand": [
+"bag",
+"bags",
+"taschen",
+"sac",
+"sacs"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "sac",
+"expand": [
+"bag",
+"bags",
+"tasche",
+"taschen",
+"sacs"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "borsa",
+"expand": [
+"bag",
+"bags",
+"tasche",
+"taschen",
+"sac",
+"sacs"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "handbag",
+"expand": [
+"handbags",
+"purse",
+"purses",
+"handtaschen"
+],
+"lang": "en",
+"note": "US purse = handbag",
+"kind": "synonym"
+},
+{
+"term": "handbags",
+"expand": [
+"handbag",
+"purse",
+"purses",
+"handtaschen"
+],
+"lang": "en",
+"note": "US purse = handbag",
+"kind": "synonym"
+},
+{
+"term": "purse",
+"expand": [
+"handbag",
+"handbags",
+"purses",
+"handtaschen"
+],
+"lang": "en",
+"note": "US purse = handbag",
+"kind": "synonym"
+},
+{
+"term": "handtasche",
+"expand": [
+"handbag",
+"handbags",
+"purse",
+"purses",
+"handtaschen"
+],
+"lang": "de",
+"note": "US purse = handbag",
+"kind": "synonym"
+},
+{
+"term": "shoulder bag",
+"expand": [
+"shoulder bags",
+"crossbody",
+"cross-body",
+"crossbody bag",
+"schultertasche",
+"schultertaschen",
+"bandouliere",
+"besace"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "crossbody",
+"expand": [
+"shoulder bag",
+"shoulder bags",
+"cross-body",
+"crossbody bag",
+"schultertasche",
+"schultertaschen",
+"bandouliere",
+"besace"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "clutch",
+"expand": [
+"clutches",
+"clutch bag",
+"pochette",
+"evening bag",
+"envelope bag",
+"unterarmtasche"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "clutches",
+"expand": [
+"clutch",
+"clutch bag",
+"pochette",
+"evening bag",
+"envelope bag",
+"unterarmtasche"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "pochette",
+"expand": [
+"clutch",
+"clutches",
+"clutch bag",
+"evening bag",
+"envelope bag",
+"unterarmtasche"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "tote",
+"expand": [
+"totes",
+"tote bag",
+"shopper",
+"shopping bag"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "totes",
+"expand": [
+"tote",
+"tote bag",
+"shopper",
+"shopping bag"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "backpack",
+"expand": [
+"backpacks",
+"rucksack"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "backpacks",
+"expand": [
+"backpack",
+"rucksack"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "rucksack",
+"expand": [
+"backpack",
+"backpacks"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "briefcase",
+"expand": [
+"briefcases",
+"attache case",
+"document case",
+"portfolio",
+"laptop bag"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "briefcases",
+"expand": [
+"briefcase",
+"attache case",
+"document case",
+"portfolio",
+"laptop bag"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wallet",
+"expand": [
+"wallets",
+"billfold",
+"card holder",
+"cardholder",
+"coin purse"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wallets",
+"expand": [
+"wallet",
+"billfold",
+"card holder",
+"cardholder",
+"coin purse"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "luggage",
+"expand": [
+"suitcase",
+"suitcases",
+"travel bag",
+"weekender",
+"holdall",
+"duffel",
+"reisegepack"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "suitcase",
+"expand": [
+"luggage",
+"suitcases",
+"travel bag",
+"weekender",
+"holdall",
+"duffel",
+"reisegepack"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "weekender",
+"expand": [
+"luggage",
+"suitcase",
+"suitcases",
+"travel bag",
+"holdall",
+"duffel",
+"reisegepack"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "belt",
+"expand": [
+"belts",
+"bindegurtel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "belts",
+"expand": [
+"belt",
+"bindegurtel"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "gurtel",
+"expand": [
+"belt",
+"belts",
+"bindegurtel"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "jewelry",
+"expand": [
+"jewellery",
+"jewels",
+"bijoux",
+"schmuck",
+"bijou"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "jewellery",
+"expand": [
+"jewelry",
+"jewels",
+"bijoux",
+"schmuck",
+"bijou"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schmuck",
+"expand": [
+"jewelry",
+"jewellery",
+"jewels",
+"bijoux",
+"bijou"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "bijoux",
+"expand": [
+"jewelry",
+"jewellery",
+"jewels",
+"schmuck",
+"bijou"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "shoe box",
+"expand": [
+"shoe boxes",
+"shoebox",
+"shoeboxes"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "leather",
+"expand": [
+"leathers",
+"leder",
+"cuir",
+"pelle",
+"cuoio"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "leder",
+"expand": [
+"leather",
+"leathers",
+"cuir",
+"pelle",
+"cuoio"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "cuir",
+"expand": [
+"leather",
+"leathers",
+"leder",
+"pelle",
+"cuoio"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "pelle",
+"expand": [
+"leather",
+"leathers",
+"leder",
+"cuir",
+"cuoio"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "suede",
+"expand": [
+"suede leather",
+"nubuck suede",
+"wildleder",
+"velours",
+"daim"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "suede leather",
+"expand": [
+"suede",
+"nubuck suede",
+"wildleder",
+"velours",
+"daim"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wildleder",
+"expand": [
+"suede",
+"suede leather",
+"nubuck suede",
+"velours",
+"daim"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "daim",
+"expand": [
+"suede",
+"suede leather",
+"nubuck suede",
+"wildleder",
+"velours"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "camoscio",
+"expand": [
+"suede",
+"suede leather",
+"nubuck suede",
+"wildleder",
+"velours",
+"daim"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "velvet",
+"expand": [
+"velours"
+],
+"lang": "en",
+"note": "German Velours in shoe catalogues usually means suede",
+"kind": "synonym"
+},
+{
+"term": "velours",
+"expand": [
+"suede",
+"velvet",
+"wildleder"
+],
+"lang": "de",
+"note": "Ambiguous: Velours means suede in German shoe catalogues and velvet in French",
+"kind": "synonym"
+},
+{
+"term": "patent",
+"expand": [
+"patent leather",
+"lackleder",
+"cuir verni",
+"verni",
+"vernis",
+"vernice"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "patent leather",
+"expand": [
+"patent",
+"lackleder",
+"cuir verni",
+"verni",
+"vernis",
+"vernice"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lackleder",
+"expand": [
+"patent",
+"patent leather",
+"cuir verni",
+"verni",
+"vernis",
+"vernice"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "cuir verni",
+"expand": [
+"patent",
+"patent leather",
+"lackleder",
+"verni",
+"vernis",
+"vernice"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "calf",
+"expand": [
+"calfskin",
+"calf leather",
+"box calf",
+"boxcalf",
+"kalbleder",
+"kalb",
+"veau",
+"vitello"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "calfskin",
+"expand": [
+"calf",
+"calf leather",
+"box calf",
+"boxcalf",
+"kalbleder",
+"kalb",
+"veau",
+"vitello"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "box calf",
+"expand": [
+"calf",
+"calfskin",
+"calf leather",
+"boxcalf",
+"kalbleder",
+"kalb",
+"veau",
+"vitello"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "kalbleder",
+"expand": [
+"calf",
+"calfskin",
+"calf leather",
+"box calf",
+"boxcalf",
+"kalb",
+"veau",
+"vitello"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "kid leather",
+"expand": [
+"kidskin",
+"kid skin",
+"chevreau"
+],
+"lang": "en",
+"note": "bare 'kid' is handled as a gender word",
+"kind": "synonym"
+},
+{
+"term": "kidskin",
+"expand": [
+"kid leather",
+"kid skin",
+"chevreau"
+],
+"lang": "en",
+"note": "bare 'kid' is handled as a gender word",
+"kind": "synonym"
+},
+{
+"term": "chevreau",
+"expand": [
+"kid leather",
+"kidskin",
+"kid skin",
+"goat",
+"goatskin",
+"goat leather"
+],
+"lang": "de",
+"note": "bare 'kid' is handled as a gender word",
+"kind": "synonym"
+},
+{
+"term": "goat",
+"expand": [
+"goatskin",
+"goat leather",
+"chevreau"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "goatskin",
+"expand": [
+"goat",
+"goat leather",
+"chevreau"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "reindeer",
+"expand": [
+"reindeer leather",
+"renna"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "elk",
+"expand": [
+"moose",
+"elk leather",
+"wapiti",
+"elan"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wapiti",
+"expand": [
+"elk",
+"moose",
+"elk leather",
+"elan"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "lamb",
+"expand": [
+"lambskin",
+"sheepskin",
+"shearling",
+"sheep",
+"lammfell",
+"mouton"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lambskin",
+"expand": [
+"lamb",
+"sheepskin",
+"shearling",
+"sheep",
+"lammfell",
+"mouton"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sheepskin",
+"expand": [
+"lamb",
+"lambskin",
+"shearling",
+"sheep",
+"lammfell",
+"mouton"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "shearling",
+"expand": [
+"lamb",
+"lambskin",
+"sheepskin",
+"sheep",
+"lammfell",
+"mouton"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "crocodile",
+"expand": [
+"croc",
+"croco",
+"crocodile leather"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "croc",
+"expand": [
+"crocodile",
+"croco",
+"crocodile leather"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "krokodil",
+"expand": [
+"crocodile",
+"croc",
+"croco",
+"crocodile leather"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "alligator",
+"expand": [
+"caiman",
+"cayman"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lizard",
+"expand": [
+"lizard skin",
+"lizard leather"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "eidechse",
+"expand": [
+"lizard",
+"lizard skin",
+"lizard leather"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "snake",
+"expand": [
+"snakeskin",
+"snake skin",
+"snake leather",
+"schlange",
+"schlangenleder"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "snakeskin",
+"expand": [
+"snake",
+"snake skin",
+"snake leather",
+"schlange",
+"schlangenleder"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "python",
+"expand": [
+"python skin"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ostrich",
+"expand": [
+"ostrich leather"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "strauss",
+"expand": [
+"ostrich",
+"ostrich leather"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "shark",
+"expand": [
+"sharkskin",
+"shark leather"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "reptile",
+"expand": [
+"reptiles",
+"reptile skin",
+"crocodile",
+"lizard",
+"snake",
+"python",
+"alligator",
+"snakeskin",
+"reptilleder",
+"schlange"
+],
+"lang": "en",
+"note": "family term expands to specific skins",
+"kind": "synonym"
+},
+{
+"term": "exotic",
+"expand": [
+"exotic skin",
+"exotic leather",
+"exotics",
+"crocodile",
+"lizard",
+"snake",
+"python",
+"ostrich",
+"alligator",
+"exotique"
+],
+"lang": "en",
+"note": "family term expands to specific skins",
+"kind": "synonym"
+},
+{
+"term": "fur",
+"expand": [
+"furs",
+"pelz"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "pelz",
+"expand": [
+"fur",
+"furs"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "pony",
+"expand": [
+"pony hair",
+"pony skin",
+"ponyskin"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "silk",
+"expand": [
+"seide",
+"soie"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "soie",
+"expand": [
+"silk",
+"seide"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "jacquard",
+"expand": [
+"jaquard"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "jaquard",
+"expand": [
+"jacquard"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "canvas",
+"expand": [
+"toile"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "linen",
+"expand": [
+"leinen",
+"lin"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "leinen",
+"expand": [
+"linen",
+"lin"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "cotton",
+"expand": [
+"baumwolle",
+"coton"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wool",
+"expand": [
+"woollen",
+"woolen",
+"laine"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "laine",
+"expand": [
+"wool",
+"woollen",
+"woolen"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "felt",
+"expand": [
+"feutre"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "textile",
+"expand": [
+"textiles",
+"fabric",
+"fabrics",
+"cloth",
+"textil",
+"stoff",
+"gewebe",
+"tissu",
+"etoffe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "textil",
+"expand": [
+"textile",
+"textiles",
+"fabric",
+"fabrics",
+"cloth",
+"stoff",
+"gewebe",
+"tissu",
+"etoffe"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "lace",
+"expand": [
+"spitzen",
+"pizzo"
+],
+"lang": "en",
+"note": "lace fabric, not shoelaces",
+"kind": "synonym"
+},
+{
+"term": "spitzen",
+"expand": [
+"lace",
+"pizzo"
+],
+"lang": "de",
+"note": "lace fabric, not shoelaces",
+"kind": "synonym"
+},
+{
+"term": "raffia",
+"expand": [
+"straw",
+"rafia"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "cork",
+"expand": [
+"kork"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "kork",
+"expand": [
+"cork"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "wood",
+"expand": [
+"wooden",
+"holz",
+"holzsohlen",
+"bois"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "bois",
+"expand": [
+"wood",
+"wooden",
+"holz",
+"holzsohlen"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "rubber",
+"expand": [
+"gummi",
+"kautschuk",
+"caoutchouc",
+"gomma"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "caoutchouc",
+"expand": [
+"rubber",
+"gummi",
+"kautschuk",
+"gomma"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "crepe",
+"expand": [
+"crepe rubber",
+"crepe sole",
+"crepesohle"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "kreppsohle",
+"expand": [
+"crepe",
+"crepe rubber",
+"crepe sole",
+"crepesohle"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "plastic",
+"expand": [
+"plexiglass",
+"plexiglas",
+"lucite",
+"acrylic",
+"kunststoff",
+"plastique"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "plexiglass",
+"expand": [
+"plastic",
+"plexiglas",
+"lucite",
+"acrylic",
+"kunststoff",
+"plastique"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "synthetic",
+"expand": [
+"faux leather",
+"imitation leather",
+"vinyl",
+"kunstleder",
+"synthetique"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "metal",
+"expand": [
+"metallic",
+"metall"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "embroidery",
+"expand": [
+"embroidered",
+"stickerei",
+"broderie"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "embroidered",
+"expand": [
+"embroidery",
+"stickerei",
+"broderie"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "rhinestone",
+"expand": [
+"rhinestones",
+"strass",
+"diamante",
+"crystals",
+"crystal",
+"swarovski"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "rhinestones",
+"expand": [
+"rhinestone",
+"strass",
+"diamante",
+"crystals",
+"crystal",
+"swarovski"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "strass",
+"expand": [
+"rhinestone",
+"rhinestones",
+"diamante",
+"crystals",
+"crystal",
+"swarovski"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "diamante",
+"expand": [
+"rhinestone",
+"rhinestones",
+"strass",
+"crystals",
+"crystal",
+"swarovski"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sequin",
+"expand": [
+"sequins",
+"paillettes",
+"paillette"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sequins",
+"expand": [
+"sequin",
+"paillettes",
+"paillette"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "beads",
+"expand": [
+"beaded",
+"beadwork",
+"bead",
+"perle"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "beaded",
+"expand": [
+"beads",
+"beadwork",
+"bead",
+"perle"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "pearl",
+"expand": [
+"pearls",
+"nacre",
+"perle"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "perforated",
+"expand": [
+"perforation",
+"perforations",
+"punched",
+"gelocht"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "perforation",
+"expand": [
+"perforated",
+"perforations",
+"punched",
+"gelocht"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "woven",
+"expand": [
+"braided",
+"plaited",
+"woven leather",
+"intrecciato",
+"tresse"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "quilted",
+"expand": [
+"quilting",
+"matelasse"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "embossed",
+"expand": [
+"embossing"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "buckle",
+"expand": [
+"buckles",
+"schnalle",
+"schnallen",
+"boucle",
+"boucles"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "buckles",
+"expand": [
+"buckle",
+"schnalle",
+"schnallen",
+"boucle",
+"boucles"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "boucle",
+"expand": [
+"buckle",
+"buckles",
+"schnalle",
+"schnallen",
+"boucles"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "bow",
+"expand": [
+"bows",
+"masche",
+"noeud",
+"noeuds"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "masche",
+"expand": [
+"bow",
+"bows",
+"noeud",
+"noeuds"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "noeud",
+"expand": [
+"bow",
+"bows",
+"masche",
+"noeuds"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "laces",
+"expand": [
+"shoelace",
+"shoelaces",
+"lacing",
+"schnurung",
+"lacet",
+"lacets"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "shoelaces",
+"expand": [
+"laces",
+"shoelace",
+"lacing",
+"schnurung",
+"lacet",
+"lacets"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "lacets",
+"expand": [
+"laces",
+"shoelace",
+"shoelaces",
+"lacing",
+"schnurung",
+"lacet"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "zip",
+"expand": [
+"zipper",
+"zip fastener",
+"zipped",
+"reissverschluss"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "zipper",
+"expand": [
+"zip",
+"zip fastener",
+"zipped",
+"reissverschluss"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "velcro",
+"expand": [
+"hook and loop"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "elastic",
+"expand": [
+"elastic gusset",
+"gusset",
+"gummizug",
+"elastique"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tassel",
+"expand": [
+"tassels",
+"glands",
+"pompon"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tassels",
+"expand": [
+"tassel",
+"glands",
+"pompon"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "fringe",
+"expand": [
+"fringes",
+"kiltie",
+"kilt"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stitching",
+"expand": [
+"stitches",
+"stitched",
+"seam",
+"genaht"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "goodyear",
+"expand": [
+"goodyear welted",
+"welted",
+"welt",
+"welted construction",
+"rahmengenaht",
+"rahmen",
+"rahmenschuh",
+"zwiegenaht",
+"trepointe",
+"guardolo"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "rahmengenaht",
+"expand": [
+"goodyear",
+"goodyear welted",
+"welted",
+"welt",
+"welted construction",
+"rahmen",
+"rahmenschuh",
+"zwiegenaht",
+"trepointe",
+"guardolo"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "trepointe",
+"expand": [
+"goodyear",
+"goodyear welted",
+"welted",
+"welt",
+"welted construction",
+"rahmengenaht",
+"rahmen",
+"rahmenschuh",
+"zwiegenaht",
+"guardolo"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "handmade",
+"expand": [
+"hand-made",
+"handcrafted",
+"hand sewn",
+"handarbeit",
+"handschusterei",
+"cousu main"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "handarbeit",
+"expand": [
+"handmade",
+"hand-made",
+"handcrafted",
+"hand sewn",
+"handschusterei",
+"cousu main"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "cousu main",
+"expand": [
+"handmade",
+"hand-made",
+"handcrafted",
+"hand sewn",
+"handarbeit",
+"handschusterei"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "custom made",
+"expand": [
+"made to measure",
+"bespoke",
+"sonderanfertigung",
+"sur mesure"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sonderanfertigung",
+"expand": [
+"custom made",
+"made to measure",
+"bespoke",
+"sur mesure"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "monogram",
+"expand": [
+"monograms",
+"b monogram"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "cap toe",
+"expand": [
+"toe cap",
+"toecap",
+"kappe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sole",
+"expand": [
+"soles",
+"outsole",
+"sohle",
+"sohlen",
+"laufsohle",
+"semelle",
+"semelles"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "soles",
+"expand": [
+"sole",
+"outsole",
+"sohle",
+"sohlen",
+"laufsohle",
+"semelle",
+"semelles"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sohle",
+"expand": [
+"sole",
+"soles",
+"outsole",
+"sohlen",
+"laufsohle",
+"semelle",
+"semelles"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "semelle",
+"expand": [
+"sole",
+"soles",
+"outsole",
+"sohle",
+"sohlen",
+"laufsohle",
+"semelles"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "insole",
+"expand": [
+"insoles",
+"innersole",
+"footbed",
+"brandsohle",
+"futtersohle",
+"semelle interieure"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "brandsohle",
+"expand": [
+"insole",
+"insoles",
+"innersole",
+"footbed",
+"futtersohle",
+"semelle interieure"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "rubber sole",
+"expand": [
+"rubber soles",
+"rubbersole",
+"gummisohle",
+"gummisohlen",
+"rohgummisohle",
+"profilgummisohle",
+"semelle caoutchouc"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "gummisohle",
+"expand": [
+"rubber sole",
+"rubber soles",
+"rubbersole",
+"gummisohlen",
+"rohgummisohle",
+"profilgummisohle",
+"semelle caoutchouc"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "leather sole",
+"expand": [
+"leather soles",
+"ledersohle"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "heel",
+"expand": [
+"heels",
+"absatz",
+"absatze",
+"talon",
+"talons"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "heels",
+"expand": [
+"heel",
+"absatz",
+"absatze",
+"talon",
+"talons"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "absatz",
+"expand": [
+"heel",
+"heels",
+"absatze",
+"talon",
+"talons"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "talon",
+"expand": [
+"heel",
+"heels",
+"absatz",
+"absatze",
+"talons"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "block heel",
+"expand": [
+"block heels",
+"chunky heel",
+"blockabsatz"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "blockabsatz",
+"expand": [
+"block heel",
+"block heels",
+"chunky heel"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "louis heel",
+"expand": [
+"louis xv heel",
+"french heel",
+"louis",
+"talon louis"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "louis",
+"expand": [
+"louis heel",
+"louis xv heel",
+"french heel",
+"talon louis"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "talon louis",
+"expand": [
+"louis heel",
+"louis xv heel",
+"french heel",
+"louis"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "last",
+"expand": [
+"shoe last",
+"lasts",
+"leisten",
+"leistprobe",
+"forme"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "leisten",
+"expand": [
+"last",
+"shoe last",
+"lasts",
+"leistprobe",
+"forme"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "upper",
+"expand": [
+"uppers",
+"vamp",
+"schaft",
+"schafte",
+"oberleder",
+"oberteil",
+"tige",
+"empeigne"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schafte",
+"expand": [
+"upper",
+"uppers",
+"vamp",
+"schaft",
+"oberleder",
+"oberteil",
+"tige",
+"empeigne"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "toe",
+"expand": [
+"toes",
+"toe box",
+"vorderpartie",
+"bout",
+"pointe",
+"punta"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "vorderpartie",
+"expand": [
+"toe",
+"toes",
+"toe box",
+"bout",
+"pointe",
+"punta"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "bout",
+"expand": [
+"toe",
+"toes",
+"toe box",
+"vorderpartie",
+"pointe",
+"punta"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "pointed toe",
+"expand": [
+"pointy toe",
+"pointed"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "square toe",
+"expand": [
+"squared toe",
+"carre",
+"carreformiger",
+"bout carre"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "carre",
+"expand": [
+"square toe",
+"squared toe",
+"carreformiger",
+"bout carre"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "lining",
+"expand": [
+"lined",
+"futter",
+"doublure",
+"fodera"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "shank",
+"expand": [
+"shank piece",
+"gelenk",
+"cambrure"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "gelenk",
+"expand": [
+"shank",
+"shank piece",
+"cambrure"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "cambrure",
+"expand": [
+"shank",
+"shank piece",
+"gelenk"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "instep",
+"expand": [
+"instep strap",
+"cou-de-pied"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "strap",
+"expand": [
+"straps",
+"strapped",
+"strappy",
+"bride",
+"brides"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "straps",
+"expand": [
+"strap",
+"strapped",
+"strappy",
+"bride",
+"brides"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "brides",
+"expand": [
+"strap",
+"straps",
+"strapped",
+"strappy",
+"bride"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "ankle strap",
+"expand": [
+"ankle straps"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "platform",
+"expand": [
+"platforms",
+"plateau",
+"plateforme"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "red",
+"expand": [
+"rot",
+"rote",
+"roter",
+"rotem",
+"rouge"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "rot",
+"expand": [
+"red",
+"rote",
+"roter",
+"rotem",
+"rouge"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "rouge",
+"expand": [
+"red",
+"rot",
+"rote",
+"roter",
+"rotem"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "blue",
+"expand": [
+"blau",
+"blaue",
+"bleu",
+"bleue"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "blau",
+"expand": [
+"blue",
+"blaue",
+"bleu",
+"bleue"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "bleu",
+"expand": [
+"blue",
+"blau",
+"blaue",
+"bleue"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "navy",
+"expand": [
+"navy blue",
+"dark blue",
+"marine",
+"bleu marine"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "marine",
+"expand": [
+"navy",
+"navy blue",
+"dark blue",
+"bleu marine"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "green",
+"expand": [
+"grun",
+"grunem",
+"vert",
+"verte"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "vert",
+"expand": [
+"green",
+"grun",
+"grunem",
+"verte"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "yellow",
+"expand": [
+"gelb",
+"gelbe",
+"jaune"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "black",
+"expand": [
+"schwarz",
+"schwarzer",
+"schwarzem",
+"noir",
+"noire"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schwarz",
+"expand": [
+"black",
+"schwarzer",
+"schwarzem",
+"noir",
+"noire"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "noir",
+"expand": [
+"black",
+"schwarz",
+"schwarzer",
+"schwarzem",
+"noire"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "white",
+"expand": [
+"weiss",
+"weisse",
+"weissem",
+"blanc",
+"blanche",
+"blancs",
+"bianca",
+"bianchi"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "weiss",
+"expand": [
+"white",
+"weisse",
+"weissem",
+"blanc",
+"blanche",
+"blancs",
+"bianca",
+"bianchi"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "blanc",
+"expand": [
+"white",
+"weiss",
+"weisse",
+"weissem",
+"blanche",
+"blancs",
+"bianca",
+"bianchi"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "brown",
+"expand": [
+"braun",
+"braune",
+"braunem",
+"brun",
+"marron"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "braun",
+"expand": [
+"brown",
+"braune",
+"braunem",
+"brun",
+"marron"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "brun",
+"expand": [
+"brown",
+"braun",
+"braune",
+"braunem",
+"marron"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "beige",
+"expand": [
+"sand",
+"nude",
+"sable"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "grey",
+"expand": [
+"gray",
+"grau",
+"gris"
+],
+"lang": "en",
+"note": "UK grey / US gray",
+"kind": "synonym"
+},
+{
+"term": "gray",
+"expand": [
+"grey",
+"grau",
+"gris"
+],
+"lang": "en",
+"note": "UK grey / US gray",
+"kind": "synonym"
+},
+{
+"term": "gris",
+"expand": [
+"grey",
+"gray",
+"grau"
+],
+"lang": "fr",
+"note": "UK grey / US gray",
+"kind": "synonym"
+},
+{
+"term": "pink",
+"expand": [
+"rosa"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "purple",
+"expand": [
+"violet",
+"lilac",
+"lavender",
+"plum",
+"lila",
+"mauve",
+"lilas",
+"viola"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "violet",
+"expand": [
+"purple",
+"lilac",
+"lavender",
+"plum",
+"lila",
+"mauve",
+"lilas",
+"viola"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "gold",
+"expand": [
+"golden",
+"gold-tone",
+"goldene",
+"dore",
+"oro"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "dore",
+"expand": [
+"gold",
+"golden",
+"gold-tone",
+"goldene",
+"oro"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "silver",
+"expand": [
+"silver-tone",
+"silber",
+"argent"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "bordeaux",
+"expand": [
+"burgundy",
+"wine red",
+"maroon",
+"oxblood",
+"weinrot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "burgundy",
+"expand": [
+"bordeaux",
+"wine red",
+"maroon",
+"oxblood",
+"weinrot"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "cream",
+"expand": [
+"ivory",
+"off-white",
+"ecru",
+"ivoire"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ivory",
+"expand": [
+"cream",
+"off-white",
+"ecru",
+"ivoire"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tan",
+"expand": [
+"cognac",
+"camel",
+"caramel",
+"taupe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "cognac",
+"expand": [
+"tan",
+"camel",
+"caramel",
+"taupe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "multicolour",
+"expand": [
+"multicolor",
+"multicoloured",
+"multicolored",
+"multi-colour",
+"farbig"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "multicolor",
+"expand": [
+"multicolour",
+"multicoloured",
+"multicolored",
+"multi-colour",
+"farbig"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "evening",
+"expand": [
+"evening wear",
+"formal",
+"gala",
+"cocktail",
+"abend",
+"abendschuh",
+"abendschuhe",
+"soir",
+"soiree",
+"du soir",
+"sera"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "abend",
+"expand": [
+"evening",
+"evening wear",
+"formal",
+"gala",
+"cocktail",
+"abendschuh",
+"abendschuhe",
+"soir",
+"soiree",
+"du soir",
+"sera"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "soir",
+"expand": [
+"evening",
+"evening wear",
+"formal",
+"gala",
+"cocktail",
+"abend",
+"abendschuh",
+"abendschuhe",
+"soiree",
+"du soir",
+"sera"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "wedding",
+"expand": [
+"bridal",
+"wedding shoe",
+"bridal shoe",
+"brautschuh"
+],
+"lang": "en",
+"note": "French 'bride' means strap; this entry is the English sense",
+"kind": "synonym"
+},
+{
+"term": "bridal",
+"expand": [
+"wedding",
+"wedding shoe",
+"bridal shoe",
+"brautschuh"
+],
+"lang": "en",
+"note": "French 'bride' means strap; this entry is the English sense",
+"kind": "synonym"
+},
+{
+"term": "golf",
+"expand": [
+"golfing",
+"golfer",
+"golfschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "tennis",
+"expand": [
+"tennisschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ski",
+"expand": [
+"skiing",
+"skier",
+"skischuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "skiing",
+"expand": [
+"ski",
+"skier",
+"skischuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "apres ski",
+"expand": [
+"apresski",
+"after ski",
+"afterski",
+"apres"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "apres-ski",
+"expand": [
+"apresski",
+"after ski",
+"afterski",
+"apres"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "apresski",
+"expand": [
+"apres ski",
+"after ski",
+"afterski",
+"apres"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "after ski",
+"expand": [
+"apres ski",
+"apresski",
+"afterski",
+"apres"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "mountaineering",
+"expand": [
+"mountain",
+"mountains",
+"climbing",
+"alpine",
+"alpinism",
+"berg",
+"berge",
+"bergschuhe",
+"montagne",
+"montagna"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "berg",
+"expand": [
+"mountaineering",
+"mountain",
+"mountains",
+"climbing",
+"alpine",
+"alpinism",
+"berge",
+"bergschuhe",
+"montagne",
+"montagna"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "montagna",
+"expand": [
+"mountaineering",
+"mountain",
+"mountains",
+"climbing",
+"alpine",
+"alpinism",
+"berg",
+"berge",
+"bergschuhe",
+"montagne"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "hiking",
+"expand": [
+"walking",
+"trekking",
+"hike",
+"wanderschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "beach",
+"expand": [
+"resort",
+"seaside",
+"swim",
+"pool",
+"strand",
+"plage",
+"mare"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "strand",
+"expand": [
+"beach",
+"resort",
+"seaside",
+"swim",
+"pool",
+"plage",
+"mare"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "plage",
+"expand": [
+"beach",
+"resort",
+"seaside",
+"swim",
+"pool",
+"strand",
+"mare"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "riding",
+"expand": [
+"equestrian",
+"horse riding"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "dance",
+"expand": [
+"dancing",
+"ballet"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sailing",
+"expand": [
+"yachting",
+"boating",
+"voile"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "military",
+"expand": [
+"army",
+"uniform",
+"militar",
+"armee"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "uniform",
+"expand": [
+"military",
+"army",
+"militar",
+"armee"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "travel",
+"expand": [
+"travelling",
+"traveling",
+"journey",
+"reise",
+"voyage"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "winter",
+"expand": [
+"hiver",
+"inverno"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "hiver",
+"expand": [
+"winter",
+"inverno"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "summer",
+"expand": [
+"sommer",
+"ete",
+"estival",
+"estivale"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "sommer",
+"expand": [
+"summer",
+"ete",
+"estival",
+"estivale"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "ete",
+"expand": [
+"summer",
+"sommer",
+"estival",
+"estivale"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "spring",
+"expand": [
+"fruhling",
+"fruhjahr",
+"printemps",
+"primavera"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "fruhling",
+"expand": [
+"spring",
+"fruhjahr",
+"printemps",
+"primavera"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "printemps",
+"expand": [
+"spring",
+"fruhling",
+"fruhjahr",
+"primavera"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "autumn",
+"expand": [
+"fall",
+"herbst",
+"automne",
+"autunno"
+],
+"lang": "en",
+"note": "UK autumn / US fall",
+"kind": "synonym"
+},
+{
+"term": "fall",
+"expand": [
+"autumn",
+"herbst",
+"automne",
+"autunno"
+],
+"lang": "en",
+"note": "UK autumn / US fall",
+"kind": "synonym"
+},
+{
+"term": "herbst",
+"expand": [
+"autumn",
+"fall",
+"automne",
+"autunno"
+],
+"lang": "de",
+"note": "UK autumn / US fall",
+"kind": "synonym"
+},
+{
+"term": "automne",
+"expand": [
+"autumn",
+"fall",
+"herbst",
+"autunno"
+],
+"lang": "fr",
+"note": "UK autumn / US fall",
+"kind": "synonym"
+},
+{
+"term": "poster",
+"expand": [
+"posters",
+"placard",
+"affiche",
+"plakat",
+"plakate",
+"plakatsammlung",
+"affiches"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "posters",
+"expand": [
+"poster",
+"placard",
+"affiche",
+"plakat",
+"plakate",
+"plakatsammlung",
+"affiches"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "plakat",
+"expand": [
+"poster",
+"posters",
+"placard",
+"affiche",
+"plakate",
+"plakatsammlung",
+"affiches"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "affiche",
+"expand": [
+"poster",
+"posters",
+"placard",
+"plakat",
+"plakate",
+"plakatsammlung",
+"affiches"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "advertisement",
+"expand": [
+"advertisements",
+"advertising",
+"advert",
+"adverts",
+"ad",
+"ads",
+"advertisment",
+"print ad",
+"inserat",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "en",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "advertising",
+"expand": [
+"advertisement",
+"advertisements",
+"advert",
+"adverts",
+"ad",
+"ads",
+"advertisment",
+"print ad",
+"inserat",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "en",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "advert",
+"expand": [
+"advertisement",
+"advertisements",
+"advertising",
+"adverts",
+"ad",
+"ads",
+"advertisment",
+"print ad",
+"inserat",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "en",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "ads",
+"expand": [
+"advertisement",
+"advertisements",
+"advertising",
+"advert",
+"adverts",
+"ad",
+"advertisment",
+"print ad",
+"inserat",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "en",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "advertisment",
+"expand": [
+"advertisement",
+"advertisements",
+"advertising",
+"advert",
+"adverts",
+"ad",
+"ads",
+"print ad",
+"inserat",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "en",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "inserat",
+"expand": [
+"advertisement",
+"advertisements",
+"advertising",
+"advert",
+"adverts",
+"ad",
+"ads",
+"advertisment",
+"print ad",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "de",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "werbung",
+"expand": [
+"advertisement",
+"advertisements",
+"advertising",
+"advert",
+"adverts",
+"ad",
+"ads",
+"advertisment",
+"print ad",
+"inserat",
+"reklame",
+"annonce",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "de",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "annonce",
+"expand": [
+"advertisement",
+"advertisements",
+"advertising",
+"advert",
+"adverts",
+"ad",
+"ads",
+"advertisment",
+"print ad",
+"inserat",
+"reklame",
+"annonces",
+"publicite",
+"reclame"
+],
+"lang": "fr",
+"note": "'advertisment' is a misspelling used in the catalogue",
+"kind": "synonym"
+},
+{
+"term": "campaign",
+"expand": [
+"ad campaign",
+"advertising campaign"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "catalogue",
+"expand": [
+"catalog",
+"catalogues",
+"catalogs",
+"lookbook",
+"katalog"
+],
+"lang": "en",
+"note": "UK catalogue / US catalog",
+"kind": "synonym"
+},
+{
+"term": "catalog",
+"expand": [
+"catalogue",
+"catalogues",
+"catalogs",
+"lookbook",
+"katalog"
+],
+"lang": "en",
+"note": "UK catalogue / US catalog",
+"kind": "synonym"
+},
+{
+"term": "catalogues",
+"expand": [
+"catalogue",
+"catalog",
+"catalogs",
+"lookbook",
+"katalog"
+],
+"lang": "en",
+"note": "UK catalogue / US catalog",
+"kind": "synonym"
+},
+{
+"term": "katalog",
+"expand": [
+"catalogue",
+"catalog",
+"catalogues",
+"catalogs",
+"lookbook"
+],
+"lang": "de",
+"note": "UK catalogue / US catalog",
+"kind": "synonym"
+},
+{
+"term": "brochure",
+"expand": [
+"brochures",
+"leaflet",
+"booklet",
+"flyer",
+"prospectus",
+"printed matter",
+"prospekte",
+"broschure",
+"drucksachen"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "broschure",
+"expand": [
+"brochure",
+"brochures",
+"leaflet",
+"booklet",
+"flyer",
+"prospectus",
+"printed matter",
+"prospekte",
+"drucksachen"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "photo",
+"expand": [
+"photos",
+"photograph",
+"photographs",
+"photography",
+"picture",
+"pictures",
+"foto",
+"fotos",
+"bild"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "photos",
+"expand": [
+"photo",
+"photograph",
+"photographs",
+"photography",
+"picture",
+"pictures",
+"foto",
+"fotos",
+"bild"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "photograph",
+"expand": [
+"photo",
+"photos",
+"photographs",
+"photography",
+"picture",
+"pictures",
+"foto",
+"fotos",
+"bild"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "photography",
+"expand": [
+"photo",
+"photos",
+"photograph",
+"photographs",
+"picture",
+"pictures",
+"foto",
+"fotos",
+"bild"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "foto",
+"expand": [
+"photo",
+"photos",
+"photograph",
+"photographs",
+"photography",
+"picture",
+"pictures",
+"fotos",
+"bild"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "postcard",
+"expand": [
+"postcards",
+"post card"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "logo",
+"expand": [
+"logos",
+"wordmark",
+"lettering",
+"emblem",
+"signet"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "packaging",
+"expand": [
+"package",
+"box design"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stamp",
+"expand": [
+"sole stamp",
+"stamped",
+"stempel",
+"sohlenstempel",
+"goldstempel",
+"brandsohlenstempel",
+"cachet",
+"timbro"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stempel",
+"expand": [
+"stamp",
+"sole stamp",
+"stamped",
+"sohlenstempel",
+"goldstempel",
+"brandsohlenstempel",
+"cachet",
+"timbro"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "drawing",
+"expand": [
+"drawings",
+"sketch",
+"sketches",
+"design drawing",
+"draft",
+"drafts",
+"illustration",
+"entwurf",
+"dessin"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "entwurf",
+"expand": [
+"drawing",
+"drawings",
+"sketch",
+"sketches",
+"design drawing",
+"draft",
+"drafts",
+"illustration",
+"dessin"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "shop window",
+"expand": [
+"window display",
+"display window",
+"vitrine",
+"schaufenster",
+"vitrines",
+"etalage"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schaufenster",
+"expand": [
+"shop window",
+"window display",
+"display window",
+"vitrine",
+"vitrines",
+"etalage"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "vitrine",
+"expand": [
+"shop window",
+"window display",
+"display window",
+"schaufenster",
+"vitrines",
+"etalage"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "visual merchandising",
+"expand": [
+"window dressing",
+"window decoration",
+"decorateur"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "decorateur",
+"expand": [
+"visual merchandising",
+"window dressing",
+"window decoration"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "store",
+"expand": [
+"stores",
+"shop",
+"shops",
+"boutique",
+"retail",
+"laden",
+"geschaft",
+"schuhhaus",
+"magasin",
+"magasins",
+"negozio"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "stores",
+"expand": [
+"store",
+"shop",
+"shops",
+"boutique",
+"retail",
+"laden",
+"geschaft",
+"schuhhaus",
+"magasin",
+"magasins",
+"negozio"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "shop",
+"expand": [
+"store",
+"stores",
+"shops",
+"boutique",
+"retail",
+"laden",
+"geschaft",
+"schuhhaus",
+"magasin",
+"magasins",
+"negozio"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schuhhaus",
+"expand": [
+"store",
+"stores",
+"shop",
+"shops",
+"boutique",
+"retail",
+"laden",
+"geschaft",
+"magasin",
+"magasins",
+"negozio"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "magasin",
+"expand": [
+"store",
+"stores",
+"shop",
+"shops",
+"boutique",
+"retail",
+"laden",
+"geschaft",
+"schuhhaus",
+"magasins",
+"negozio"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "boutique",
+"expand": [
+"store",
+"stores",
+"shop",
+"shops",
+"retail",
+"laden",
+"geschaft",
+"schuhhaus",
+"magasin",
+"magasins",
+"negozio"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "factory",
+"expand": [
+"factories",
+"shoe factory",
+"manufacture",
+"fabrik",
+"schuhfabrik",
+"fabrique"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "fabrik",
+"expand": [
+"factory",
+"factories",
+"shoe factory",
+"manufacture",
+"schuhfabrik",
+"fabrique"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "fabrique",
+"expand": [
+"factory",
+"factories",
+"shoe factory",
+"manufacture",
+"fabrik",
+"schuhfabrik"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "workshop",
+"expand": [
+"atelier",
+"shoemaker",
+"cobbler",
+"werkstatt",
+"schusterei",
+"cordonnier",
+"bottier"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schusterei",
+"expand": [
+"workshop",
+"atelier",
+"shoemaker",
+"cobbler",
+"werkstatt",
+"cordonnier",
+"bottier"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "atelier",
+"expand": [
+"workshop",
+"shoemaker",
+"cobbler",
+"werkstatt",
+"schusterei",
+"cordonnier",
+"bottier"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "exhibition",
+"expand": [
+"exhibitions",
+"exhibit",
+"expo",
+"fair",
+"trade fair",
+"ausstellung",
+"landesausstellung",
+"weltausstellung",
+"mustermesse",
+"exposition",
+"foire",
+"salon",
+"esposizione"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "ausstellung",
+"expand": [
+"exhibition",
+"exhibitions",
+"exhibit",
+"expo",
+"fair",
+"trade fair",
+"landesausstellung",
+"weltausstellung",
+"mustermesse",
+"exposition",
+"foire",
+"salon",
+"esposizione"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "exposition",
+"expand": [
+"exhibition",
+"exhibitions",
+"exhibit",
+"expo",
+"fair",
+"trade fair",
+"ausstellung",
+"landesausstellung",
+"weltausstellung",
+"mustermesse",
+"foire",
+"salon",
+"esposizione"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "fashion show",
+"expand": [
+"runway",
+"catwalk",
+"modeschau",
+"modetheater"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "modetheater",
+"expand": [
+"fashion show",
+"runway",
+"catwalk",
+"modeschau"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "museum",
+"expand": [
+"museums",
+"schuhmuseum",
+"musee"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "switzerland",
+"expand": [
+"swiss",
+"schweiz",
+"schweizer",
+"schweizerische",
+"schweizerischen",
+"suisse",
+"suisses",
+"svizzera"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "swiss",
+"expand": [
+"switzerland",
+"schweiz",
+"schweizer",
+"schweizerische",
+"schweizerischen",
+"suisse",
+"suisses",
+"svizzera"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "schweiz",
+"expand": [
+"switzerland",
+"swiss",
+"schweizer",
+"schweizerische",
+"schweizerischen",
+"suisse",
+"suisses",
+"svizzera"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "suisse",
+"expand": [
+"switzerland",
+"swiss",
+"schweiz",
+"schweizer",
+"schweizerische",
+"schweizerischen",
+"suisses",
+"svizzera"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "geneva",
+"expand": [
+"genf",
+"geneve"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "geneve",
+"expand": [
+"geneva",
+"genf"
+],
+"lang": "fr",
+"kind": "synonym"
+},
+{
+"term": "milan",
+"expand": [
+"milano"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "milano",
+"expand": [
+"milan"
+],
+"lang": "it",
+"kind": "synonym"
+},
+{
+"term": "vienna",
+"expand": [
+"wien",
+"wiener"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "wien",
+"expand": [
+"vienna",
+"wiener"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "schoenenwerd",
+"expand": [
+"schonenwerd"
+],
+"lang": "en",
+"note": "Bally home town, two spellings in catalogue",
+"kind": "synonym"
+},
+{
+"term": "schonenwerd",
+"expand": [
+"schoenenwerd"
+],
+"lang": "en",
+"note": "Bally home town, two spellings in catalogue",
+"kind": "synonym"
+},
+{
+"term": "scribe",
+"expand": [
+"scribes",
+"bally scribe",
+"scibe",
+"scrib"
+],
+"lang": "en",
+"note": "Bally Scribe men's line; 'scibe' is a common misspelling",
+"kind": "synonym"
+},
+{
+"term": "scibe",
+"expand": [
+"scribe",
+"scribes",
+"bally scribe",
+"scrib"
+],
+"lang": "en",
+"note": "Bally Scribe men's line; 'scibe' is a common misspelling",
+"kind": "synonym"
+},
+{
+"term": "trainspotting",
+"expand": [
+"trainspotter",
+"trainspotters",
+"train spotting",
+"trainspot"
+],
+"lang": "en",
+"note": "Bally Trainspotting bag line",
+"kind": "synonym"
+},
+{
+"term": "trainspotter",
+"expand": [
+"trainspotting",
+"trainspotters",
+"train spotting",
+"trainspot"
+],
+"lang": "en",
+"note": "Bally Trainspotting bag line",
+"kind": "synonym"
+},
+{
+"term": "bally stripe",
+"expand": [
+"bally stripes",
+"stripe",
+"stripes",
+"signature stripe",
+"rayures"
+],
+"lang": "en",
+"note": "Bally red and white stripe",
+"kind": "synonym"
+},
+{
+"term": "stripes",
+"expand": [
+"bally stripe",
+"bally stripes",
+"stripe",
+"signature stripe",
+"rayures"
+],
+"lang": "en",
+"note": "Bally red and white stripe",
+"kind": "synonym"
+},
+{
+"term": "rayures",
+"expand": [
+"bally stripe",
+"bally stripes",
+"stripe",
+"stripes",
+"signature stripe"
+],
+"lang": "fr",
+"note": "Bally red and white stripe",
+"kind": "synonym"
+},
+{
+"term": "mandarin",
+"expand": [
+"mandarins",
+"mandarin shoe",
+"mandarinschuhe"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "madeleine",
+"expand": [
+"bally madeleine",
+"madelein",
+"ballymadeleine"
+],
+"lang": "en",
+"kind": "synonym"
+},
+{
+"term": "damenschuh",
+"expand": [
+"damenschuhe",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Women",
+"note": "German compound with a gender prefix; apply the Women gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "damenschuhe",
+"expand": [
+"damenschuh",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Women",
+"note": "German compound with a gender prefix; apply the Women gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "herrenschuh",
+"expand": [
+"herrenschuhe",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Men",
+"note": "German compound with a gender prefix; apply the Men gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "herrenschuhe",
+"expand": [
+"herrenschuh",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Men",
+"note": "German compound with a gender prefix; apply the Men gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "kinderschuh",
+"expand": [
+"kinderschuhe",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Children",
+"note": "German compound with a gender prefix; apply the Children gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "kinderschuhe",
+"expand": [
+"kinderschuh",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Children",
+"note": "German compound with a gender prefix; apply the Children gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "knabenschuh",
+"expand": [
+"knabenschuhe",
+"shoes",
+"shoe"
+],
+"lang": "de",
+"gender_hint": "Children",
+"note": "German compound with a gender prefix; apply the Children gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "herrenstiefel",
+"expand": [
+"boots",
+"boot",
+"stiefel"
+],
+"lang": "de",
+"gender_hint": "Men",
+"note": "German compound with a gender prefix; apply the Men gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "damenstiefel",
+"expand": [
+"boots",
+"boot",
+"stiefel"
+],
+"lang": "de",
+"gender_hint": "Women",
+"note": "German compound with a gender prefix; apply the Women gender filter alongside the expansion",
+"kind": "synonym"
+},
+{
+"term": "halbschuh",
+"expand": [
+"halbschuhe",
+"low shoe",
+"low shoes",
+"oxford",
+"derby"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "halbschuhe",
+"expand": [
+"halbschuh",
+"low shoe",
+"low shoes",
+"oxford",
+"derby"
+],
+"lang": "de",
+"kind": "synonym"
+},
+{
+"term": "women",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "womens",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "women's",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "ladies",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "lady",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "damen",
+"expand": [],
+"lang": "de",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "dame",
+"expand": [],
+"lang": "de",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "femme",
+"expand": [],
+"lang": "fr",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "donna",
+"expand": [],
+"lang": "it",
+"kind": "gender",
+"value": "Women"
+},
+{
+"term": "men",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "mens",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "men's",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "gentlemen",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "herren",
+"expand": [],
+"lang": "de",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "homme",
+"expand": [],
+"lang": "fr",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "uomo",
+"expand": [],
+"lang": "it",
+"kind": "gender",
+"value": "Men"
+},
+{
+"term": "children",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "childrens",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "kids",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "child",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "kinder",
+"expand": [],
+"lang": "de",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "enfant",
+"expand": [],
+"lang": "fr",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "bambini",
+"expand": [],
+"lang": "it",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "girls",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "boys",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Children"
+},
+{
+"term": "unisex",
+"expand": [],
+"lang": "en",
+"kind": "gender",
+"value": "Unisex"
+}
+]
