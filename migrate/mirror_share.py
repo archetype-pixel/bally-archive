@@ -2,7 +2,7 @@
 Works through table mirror_copy (status pending -> copied/error) for one shard. Files already copied as linked originals or
 360 frames are not in the table. Mode PACK=1 instead bundles the tiny priority-3 hot-folder XML logs into tar.gz files.
 Env: AZ_ACCOUNT, AZ_SHARE, AZ_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, SHARD, WORKERS, RUN_SECONDS, MAX_PRIORITY, PACK."""
-import io, mimetypes, os, sys, tarfile, time
+import io, mimetypes, os, re, sys, tarfile, time, unicodedata
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import quote
 import requests
@@ -35,6 +35,12 @@ def mark(path, status, error=None):
         time.sleep(2 + t * 3)
 
 
+def safe_key(path):
+    """Storage keys must be plain ASCII: strip accents (Müller -> Muller) and replace other odd characters."""
+    s = unicodedata.normalize("NFKD", path).encode("ascii", "ignore").decode()
+    return re.sub(r"[^A-Za-z0-9/._ ()\-,'&+=@]", "_", s)
+
+
 def upload(dest, data, ctype):
     url = f"{SB}/storage/v1/object/archive/{quote(dest, safe='/')}"
     last = ""
@@ -62,8 +68,9 @@ def one(row):
         mark(path, "error", f"download {type(e).__name__} {str(e)[:160]}")
         return "error"
     ctype = mimetypes.guess_type(path)[0] or "application/octet-stream"
-    err = upload(f"azure-mirror/{path}", data, ctype)
-    mark(path, "error" if err else "copied", err)
+    key = safe_key(path)
+    err = upload(f"azure-mirror/{key}", data, ctype)
+    mark(path, "error" if err else "copied", err or (None if key == path else f"stored as azure-mirror/{key}"))
     return "error" if err else "copied"
 
 
