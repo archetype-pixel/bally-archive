@@ -1,0 +1,20 @@
+name: Build the catalogue bundle
+
+on:
+  workflow_dispatch:
+    inputs:
+      force: {description: "1 = rebuild even if this version exists", default: "0"}
+  schedule:
+    - cron: "17 */3 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh search index, then build bundle
+        env:
+          SB: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          curl -sS -X POST "$SB/rest/v1/rpc/refresh_object_search" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}' -w " refresh=%{http_code}\n" || true
+          curl -sS --fail-with-body -m 300 -X POST "$SB/functions/v1/catalog-bundle?force=${{ inputs.force || '0' }}" -H "Authorization: Bearer $KEY"
