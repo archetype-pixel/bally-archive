@@ -11,10 +11,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Refresh search index, then build bundle
+      - name: Refresh search index, then build and upload the bundle
         env:
           SB: https://glfiqywdzqcnrhpsjwwp.supabase.co
           KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FORCE: ${{ inputs.force || '0' }}
         run: |
-          curl -sS -X POST "$SB/rest/v1/rpc/refresh_object_search" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}' -w " refresh=%{http_code}\n" || true
-          curl -sS --fail-with-body -m 300 -X POST "$SB/functions/v1/catalog-bundle?force=${{ inputs.force || '0' }}" -H "Authorization: Bearer $KEY"
+          set -euo pipefail
+          H=(-H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json")
+          curl -sS -X POST "$SB/rest/v1/rpc/refresh_object_search" "${H[@]}" -d '{}' -w " refresh=%{http_code}\n" || true
+          V=$(curl -sS -X POST "$SB/rest/v1/rpc/catalog_version" "${H[@]}" -d '{}' | tr -d '"')
+          NAME="catalog/bundle-$V.json.gz"
+          echo "version $V"
+          if [ "$FORCE" != "1" ] && curl -sfI "$SB/storage/v1/object/public/web/$NAME" >/dev/null; then echo "exists"; exit 0; fi
+          curl -sS --fail-with-body -m 600 -X POST "$SB/rest/v1/rpc/catalog_bundle_json" "${H[@]}" -d '{}' -o bundle.json
+          python3 -c "import json;d=json.load(open('bundle.json'));d['v']='$V';print({k:(len(v) if isinstance(v,(list,dict)) else v) for k,v in d.items()});json.dump(d,open('bundle.json','w'),separators=(',',':'))"
+          gzip -9 -c bundle.json > bundle.json.gz
+          ls -l bundle.json bundle.json.gz
+          curl -sS --fail-with-body -X POST "$SB/storage/v1/object/web/$NAME" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/gzip" -H "Cache-Control: max-age=31536000" -H "x-upsert: true" --data-binary @bundle.json.gz
