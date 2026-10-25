@@ -5,8 +5,7 @@ on:
     inputs:
       max_priority: {description: "1 = images/docs, 2 = + small metadata files", default: "2"}
       pack: {description: "1 = bundle the hot-folder XML logs instead", default: "0"}
-  schedule:
-    - cron: "23 */6 * * *"
+  # schedule removed 2026-10-25: mirror complete (every Azure file copied or packed)
 
 concurrency:
   group: mirror-share
