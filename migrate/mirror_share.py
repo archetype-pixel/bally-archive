@@ -104,9 +104,9 @@ def pack():
     rows, off = [], 0
     while True:
         r = sess.get(f"{SB}/rest/v1/mirror_copy", headers=H, timeout=120,
-                     params={"select": "path", "priority": "eq.3", "status": "eq.pending", "shard": f"eq.{SHARD}", "order": "path", "limit": 5000, "offset": off})
-        page = r.json(); rows += page; off += 5000
-        if len(page) < 5000:
+                     params={"select": "path,priority,shard", "priority": "eq.3", "status": "eq.pending", "shard": f"eq.{SHARD}", "order": "path", "limit": 1000, "offset": off})
+        r.raise_for_status(); page = r.json(); rows += page; off += len(page)
+        if not page:
             break
     groups = defaultdict(list)
     for x in rows:
@@ -127,10 +127,11 @@ def pack():
         err = upload(name, buf.getvalue(), "application/gzip")
         log(g, len(paths), "files ->", name, err or "ok")
         if not err:
-            for i in range(0, len(paths), 500):
-                chunk = ",".join('"' + p.replace('"', '\\"') + '"' for p in paths[i:i + 500])
-                sess.patch(f"{SB}/rest/v1/mirror_copy", headers={**H, "Prefer": "return=minimal"}, timeout=120,
-                           params={"path": f"in.({chunk})"}, json={"status": "packed", "error": name})
+            for i in range(0, len(paths), 1000):
+                body = [{"path": p, "priority": 3, "shard": SHARD, "status": "packed", "error": name} for p in paths[i:i + 1000]]
+                rr = sess.post(f"{SB}/rest/v1/mirror_copy", headers={**H, "Prefer": "resolution=merge-duplicates,return=minimal"}, timeout=120, json=body)
+                if not rr.ok:
+                    log("mark failed", rr.status_code, rr.text[:200])
 
 
 if __name__ == "__main__":
