@@ -94,27 +94,40 @@ for sign in ((1, -1) if not os.environ.get("FIT") else ()):
                 best = (s, sign, elev, cy)
 print("best fit", json.dumps({"iou": round(best[0], 3), "sign": int(best[1]), "elev": int(best[2]), "cy": int(best[3])}), flush=True)
 s, sign, elev, cy = best
-G = 260
+G = int(os.environ.get("GRID", "300"))
 occ, (xs, ys, zs, e, _) = carve(elev, sign, cy)
 occ = ndimage.binary_opening(occ, iterations=1)
-vol = ndimage.gaussian_filter(occ.astype(np.float32), 1.0)
-verts, faces, normals, _ = measure.marching_cubes(vol, 0.5)
+vol = ndimage.gaussian_filter(occ.astype(np.float32), 1.4)
+verts, faces, _, _ = measure.marching_cubes(vol, 0.5)
 step = xs[1] - xs[0]
 P = np.stack([xs[0] + verts[:, 0] * step, ys[0] + verts[:, 1] * (ys[1] - ys[0]), zs[0] + verts[:, 2] * step], 1)
-Nn = -normals  # marching_cubes normals point inward for this field orientation
-Nn /= np.linalg.norm(Nn, axis=1, keepdims=True) + 1e-9
-# colour each vertex from the frame that faces it most directly
-best_dot = np.full(len(P), -2.0); col = np.zeros((len(P), 3))
+mesh = trimesh.Trimesh(vertices=P, faces=faces, process=True)
+mesh.fix_normals()
+trimesh.smoothing.filter_taubin(mesh, lamb=0.5, nu=-0.53, iterations=12)
+if len(mesh.faces) > 150000:
+    mesh = mesh.simplify_quadric_decimation(face_count=150000)
+mesh.fix_normals()
+P = mesh.vertices; Nn = mesh.vertex_normals
+# colour each vertex from the photos that face it: median of the best-facing views (removes glare on polished leather)
+samples = np.full((N, len(P), 3), np.nan, np.float32); dots = np.full((N, len(P)), -2.0, np.float32)
 for k in range(N):
     th = sign * 2 * math.pi * k / N
-    view = np.array([-math.sin(th), 0, math.cos(th)]) * -1  # direction from object toward camera
+    view = np.array([-math.sin(th) * math.cos(e), math.sin(e), math.cos(th) * math.cos(e)])
     dot = Nn @ view
     u = P[:, 0] * math.cos(th) + P[:, 2] * math.sin(th); d = -P[:, 0] * math.sin(th) + P[:, 2] * math.cos(th)
     v = P[:, 1] * math.cos(e) - d * math.sin(e)
     px = np.clip(np.round(CX + u).astype(int), 0, W - 1); py = np.clip(np.round(cy - v).astype(int), 0, H - 1)
-    better = dot > best_dot
-    col[better] = imgs[k][py[better], px[better]]; best_dot[better] = dot[better]
-mesh = trimesh.Trimesh(vertices=P * np.array([1, 1, 1]) / 100.0, faces=faces[:, ::-1], vertex_colors=np.c_[col.clip(0, 255).astype(np.uint8), np.full(len(P), 255, np.uint8)], process=True)
-mesh = mesh.simplify_quadric_decimation(face_count=min(120000, len(mesh.faces))) if hasattr(mesh, "simplify_quadric_decimation") and len(mesh.faces) > 120000 else mesh
+    er = ndimage.binary_erosion(masks[k], iterations=4)[py, px]
+    good = er & (dot > 0.2)
+    px_ = imgs[k][py, px]
+    glare = (px_.min(1) > 170) & ((px_.max(1) - px_.min(1)) < 25)  # white reflections of the studio floor on polished leather
+    good &= ~glare if os.environ.get("DEGLARE", "1") == "1" else good
+    samples[k][good] = px_[good]; dots[k][good] = dot[good]
+order = np.argsort(-dots, axis=0)[:5]
+top = np.take_along_axis(samples, order[:, :, None], axis=0)
+col = np.nanmedian(top, axis=0)
+col = np.where(np.isnan(col), 28, col)
+mesh.visual = trimesh.visual.ColorVisuals(mesh, vertex_colors=np.c_[col.clip(0, 255).astype(np.uint8), np.full(len(P), 255, np.uint8)])
+mesh.apply_scale(1 / 100.0)
 mesh.export(OUT)
 print("mesh", len(mesh.vertices), "vertices", len(mesh.faces), "faces ->", OUT)

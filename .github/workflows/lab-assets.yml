@@ -1,0 +1,23 @@
+name: Product Lab assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug: {required: true}
+      spin: {description: spin storage prefix, required: true}
+      fit: {description: 'turntable fit JSON, blank = search', default: ""}
+      photos: {description: space-separated display photo paths for colourways, default: ""}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install numpy scipy scikit-image trimesh fast-simplification Pillow requests
+      - env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: bash migrate/lab_assets.sh "${{ inputs.slug }}" "${{ inputs.spin }}" '${{ inputs.fit }}' ${{ inputs.photos }}
