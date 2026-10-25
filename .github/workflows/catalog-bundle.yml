@@ -21,7 +21,7 @@ jobs:
           H=(-H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json")
           curl -sS -X POST "$SB/rest/v1/rpc/refresh_object_search" "${H[@]}" -d '{}' -w " refresh=%{http_code}\n" || true
           V=$(curl -sS -X POST "$SB/rest/v1/rpc/catalog_version" "${H[@]}" -d '{}' | tr -d '"')
-          NAME="catalog/bundle-$V.json.gz"
+          NAME="catalog/bundle-$V.v2.json.gz"
           echo "version $V"
           if [ "$FORCE" != "1" ] && curl -sfI "$SB/storage/v1/object/public/web/$NAME" >/dev/null; then echo "exists"; exit 0; fi
           curl -sS --fail-with-body -m 600 -X POST "$SB/rest/v1/rpc/catalog_bundle_json" "${H[@]}" -d '{}' -o bundle.json
