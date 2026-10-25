@@ -1,0 +1,39 @@
+name: Mirror the whole Azure share into Supabase Storage
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_priority: {description: "1 = images/docs, 2 = + small metadata files", default: "2"}
+      pack: {description: "1 = bundle the hot-folder XML logs instead", default: "0"}
+  schedule:
+    - cron: "23 */6 * * *"
+
+concurrency:
+  group: mirror-share
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install azure-storage-file-share requests
+      - env:
+          AZ_ACCOUNT: ballydigitalassets
+          AZ_SHARE: azuweubllssa
+          AZ_KEY: ${{ secrets.AZ_KEY }}
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SHARD: ${{ matrix.shard }}
+          WORKERS: "6"
+          RUN_SECONDS: "20400"
+          MAX_PRIORITY: ${{ inputs.max_priority || '2' }}
+          PACK: ${{ inputs.pack || '0' }}
+        run: python migrate/mirror_share.py
