@@ -1,0 +1,22 @@
+name: Lab generate test
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug: {default: "scribe"}
+      guid: {description: "object guid", default: ""}
+      prompt: {default: "Same shoe in rich chestnut brown suede with a natural crepe sole."}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SLUG: ${{ inputs.slug }}
+          GUID: ${{ inputs.guid }}
+          PROMPT: ${{ inputs.prompt }}
+        run: |
+          body=$(jq -n --arg s "$SLUG" --arg g "$GUID" --arg p "$PROMPT" '{lab_slug:$s, object_guid:$g, prompt:$p}')
+          curl -sS -m 150 -X POST https://glfiqywdzqcnrhpsjwwp.supabase.co/functions/v1/lab-generate \
+            -H "Authorization: Bearer $KEY" -H "apikey: $KEY" -H "Content-Type: application/json" -d "$body" -w '\nHTTP %{http_code}\n'
