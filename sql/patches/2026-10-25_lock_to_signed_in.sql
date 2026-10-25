@@ -1,3 +1,4 @@
+-- APPLIED 2026-10-25 19:45Z
 -- Lock the archive database to signed-in users. The anonymous (public key) role loses access to every
 -- table, view and function in public; signed-in users keep exactly what they had, no more.
 -- Apply only after the site sends the user's session token on every request.
