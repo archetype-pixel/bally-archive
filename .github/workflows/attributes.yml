@@ -1,0 +1,32 @@
+name: Design attribute passes
+
+on:
+  workflow_dispatch:
+    inputs:
+      model: {description: model, default: "claude-sonnet-5-5"}
+      limit: {description: "objects per shard (blank = all)", default: ""}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install requests Pillow anthropic
+      - env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+          MODEL: ${{ inputs.model }}
+          LIMIT: ${{ inputs.limit }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: "4"
+          WORKERS: "8"
+        run: python migrate/attributes_ai.py
