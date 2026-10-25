@@ -1,0 +1,5 @@
+-- Lab research engine (applied 2026-10-25 as migration lab_research_engine; bundle and lock patches in sql/patches).
+-- Tables: lab_research (question, dossier jsonb, brief, model, status); studio_projects gains question, shared.
+-- Function: lab_dossier(q text, p_max int) gathers objects (via search_objects), counts by decade/material/colour/
+-- construction/style, key objects, lines (line_summary), linked book plates, matching book passages, outside records and
+-- auction prices. Edge function edge/lab-research writes the cited brief with Gemini.
