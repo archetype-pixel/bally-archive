@@ -1,0 +1,8 @@
+-- APPLIED 2026-10-27 08:45Z (live edit of search_objects via DO-block replace).
+-- With two or more search terms, every result must match at least one SPECIFIC term: not a generic word
+-- (posters, shoes, bag, photo, ladies, vintage...) and not a word found in more than 1,500 records.
+-- "Villemot posters": 1,095 results -> 11 (the 9 Villemot posters and 2 shoes whose records mention Villemot).
+-- "crocodile handbag": every result now mentions crocodile (bags first, then photos/ads, then shoes).
+-- Unchanged when all terms are generic ("red ladies bag": red appears in 2,577 records). Timing 40-200 ms.
+-- Implementation: variables spec tsquery + generic_re; loop over gq after it is built; text_hits gets
+-- spec_ok = (spec is null or b.doc @@ spec); text_hits2 filters on spec_ok.
