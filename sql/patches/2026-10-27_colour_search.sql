@@ -1,0 +1,9 @@
+-- APPLIED 2026-10-27 16:40Z. Colour words in a search match the object's actual colours, not any mention in the text.
+-- colour_family_map(word -> family, weight, query_word): English + German/French/Italian colour words; ambiguous
+--   words (rose, sand, wine, plum...) are not treated as colour searches (query_word = false).
+-- object_colours(guid, family, weight): from catalogue colours (canon, weight 1) and AI colours (weight by prominence:
+--   1st 1.0, 2nd .85, 3rd .65, rest .45). Rebuilt by refresh_object_colours(), called from refresh_object_search().
+-- search_objects: colour tokens become colour groups (count toward matched/full matches); at least one requested
+--   colour must be present; ranking adds 60 x share of the object's colour weight that is in the requested colours.
+-- Previous definition saved in public.function_backups ('search_objects before colour families 2026-10-27').
+-- Result: "red and white shoes" top 12 all red-and-white shoes (was navy sneakers, brown boat shoes, posters).
