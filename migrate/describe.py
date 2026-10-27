@@ -134,9 +134,12 @@ def one(o):
         blocks = [image_block(p, px) for p in photos]
         model = TEXT_MODEL if o.get("category") in TEXT_CATS else MODEL
         msg = client.messages.create(
-            model=model, max_tokens=1600, system=SYSTEM, tools=[TOOL], tool_choice={"type": "tool", "name": "record_object"},
+            model=model, max_tokens=8000, system=SYSTEM + " Always answer by calling record_object exactly once.", tools=[TOOL],
+            tool_choice={"type": "tool", "name": "record_object"} if "haiku" in model else {"type": "auto"},
             messages=[{"role": "user", "content": blocks + [{"type": "text", "text": record_text(o)}]}])
-        data = next(b.input for b in msg.content if b.type == "tool_use")
+        data = next((b.input for b in msg.content if b.type == "tool_use"), None)
+        if data is None:
+            raise ValueError("model did not call record_object")
         store({"object_guid": o["guid"], "model": model, "description": data.get("description"), "fields": data,
                "photos_used": photos, "input_tokens": msg.usage.input_tokens, "output_tokens": msg.usage.output_tokens,
                "status": "done", "error": None})
