@@ -1,0 +1,47 @@
+name: Pipeline test (temporary test object TEST0000001)
+
+on:
+  workflow_dispatch:
+    inputs:
+      action: {description: "setup or cleanup", default: "setup"}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      SB: https://glfiqywdzqcnrhpsjwwp.supabase.co
+      KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - name: Setup
+        if: inputs.action == 'setup'
+        run: |
+          set -euo pipefail
+          H=(-H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json")
+          curl -sS -X POST "$SB/rest/v1/object_additions" "${H[@]}" -H "Prefer: resolution=merge-duplicates,return=minimal" \
+            -d '{"guid":"7E57E57E-0000-4000-8000-000000000001","object_code":"TEST0000001","data":{"object_code":"TEST0000001","category":"ADVERTISING","model_name":"Pipeline test (delete)","description":"Temporary test object for the photo pipeline"}}' -w " addition=%{http_code}\n"
+          cp() { curl -sS -X POST "$SB/storage/v1/object/copy" "${H[@]}" -d "{\"bucketId\":\"archive\",\"sourceKey\":\"$1\",\"destinationKey\":\"$2\"}" -w " copy=%{http_code}\n"; }
+          cp "originals/17A1E23A-C102-4925-B2DA-D62EDEB38BA0/P0146_1966_HugoSchild_WernerErne.tif" "intake/e2e-test/TEST0000001_poster.tif"
+          cp "originals/3C5C5DC2-B52D-4BAE-A142-6CD889E57636/SHOI0010407_SN038258_CLOSEUP001.jpg" "intake/e2e-test/TEST0000001/side.jpg"
+          cp "originals/3C5C5DC2-B52D-4BAE-A142-6CD889E57636/SHOI0010407_SN038258_CLOSEUP001.jpg" "intake/e2e-test/misc/IMG_0001.jpg"
+      - name: Cleanup
+        if: inputs.action == 'cleanup'
+        run: |
+          set -uo pipefail
+          H=(-H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json")
+          G=7E57E57E-0000-4000-8000-000000000001
+          UP=$(curl -sS "$SB/rest/v1/media_uploads?object_guid=eq.$G&select=guid,display_path,thumb_path" "${H[@]}")
+          echo "$UP"
+          for g in $(echo "$UP" | python3 -c "import json,sys;print(' '.join(r['guid'] for r in json.load(sys.stdin)))"); do
+            curl -sS -X DELETE "$SB/rest/v1/embed_queue?asset_guid=eq.$g" "${H[@]}"; curl -sS -X DELETE "$SB/rest/v1/image_embeddings?asset_guid=eq.$g" "${H[@]}"
+            curl -sS -X DELETE "$SB/rest/v1/ai_tags?asset_guid=eq.$g" "${H[@]}"; curl -sS -X DELETE "$SB/rest/v1/zoom_copy?guid=eq.$g" "${H[@]}"
+            curl -sS -X DELETE "$SB/storage/v1/object/web" "${H[@]}" -d "{\"prefixes\":[\"zoom/uploads/$g.jpg\"]}"
+          done
+          curl -sS -X DELETE "$SB/rest/v1/media_uploads?object_guid=eq.$G" "${H[@]}"
+          curl -sS -X DELETE "$SB/rest/v1/ai_descriptions?object_guid=eq.$G" "${H[@]}"
+          WEB=$(curl -sS "$SB/rest/v1/intake_files?batch=eq.e2e-test&select=display_path,thumb_path" "${H[@]}" | python3 -c "import json,sys;print(json.dumps([p for r in json.load(sys.stdin) for p in (r['display_path'],r['thumb_path']) if p]))")
+          curl -sS -X DELETE "$SB/storage/v1/object/web" "${H[@]}" -d "{\"prefixes\":$WEB}"
+          curl -sS -X DELETE "$SB/storage/v1/object/archive" "${H[@]}" -d '{"prefixes":["intake/e2e-test/TEST0000001_poster.tif","intake/e2e-test/TEST0000001/side.jpg","intake/e2e-test/misc/IMG_0001.jpg"]}'
+          curl -sS -X DELETE "$SB/rest/v1/intake_files?batch=eq.e2e-test" "${H[@]}"
+          curl -sS -X DELETE "$SB/rest/v1/object_additions?guid=eq.$G" "${H[@]}"
+          curl -sS -X POST "$SB/rest/v1/rpc/refresh_ai_profile" "${H[@]}" -d '{}'
+          echo cleaned
