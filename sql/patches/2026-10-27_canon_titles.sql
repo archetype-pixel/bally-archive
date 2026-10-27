@@ -4,3 +4,6 @@
 -- Before: shoes/bags without a model name showed an AI colour+type label ("Gold pump") ahead of the catalogue description.
 -- Also: catalog_epoch table, included in catalog_version(), so a title-rule change produces a new catalogue file
 -- and browsers stop serving the old cached one. Bump with: update catalog_epoch set bumped_at = now(), note = '...';
+-- 15:10Z: object_display_title gains ai_title (AI identification: colour + shoe/bag type, or picture type), shown as a
+-- separate labelled line, never as the title. Catalogue bundle gains 'ai_titles' {guid: ai_title} (only where it differs
+-- from the title; 16,407 objects). object_ai_titles_json() added; catalog_bundle_json() extended.
