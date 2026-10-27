@@ -3,6 +3,9 @@ its catalogue record and returns a short description plus structured, controlled
 Results go to ai_descriptions (never into the catalogue fields). Resumable, sharded.
 
 Env: SUPABASE_URL, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY, MODEL, SHARD, SHARDS, LIMIT, RUN_SECONDS, WORKERS
+     REDO = "" (new objects only) or a comma list of categories to re-describe (objects whose description has no
+            English translation yet, i.e. described before 2026-10-27), e.g. "ADVERTISING,CORPORATE IDENTITY".
+     IMG_PX = long edge sent to the model (default 768; text-heavy categories automatically get 1568).
 """
 import base64
 import io
@@ -24,7 +27,10 @@ SHARDS = int(os.environ.get("SHARDS", "1"))
 LIMIT = int(os.environ.get("LIMIT", "0"))  # 0 = no limit
 RUN_SECONDS = int(os.environ.get("RUN_SECONDS", "20400"))
 WORKERS = int(os.environ.get("WORKERS", "6"))
-IMG_PX = 768
+IMG_PX = int(os.environ.get("IMG_PX", "768"))
+TEXT_PX = 1568  # posters, ads, documents: enough resolution to read the words
+TEXT_CATS = {"ADVERTISING", "CORPORATE IDENTITY", "PHOTOGRAPHY", "DOCUMENTS", "COMPONENTS", None}
+REDO = [c.strip() for c in os.environ.get("REDO", "").split(",") if c.strip()]
 H = {"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": "application/json"}
 T0 = time.time()
 WORKSPACE = os.environ.get("ANTHROPIC_WORKSPACE_ID", "")
@@ -49,7 +55,7 @@ TOOL = {
     "input_schema": {
         "type": "object",
         "properties": {
-            "description": {"type": "string", "description": "2 to 3 plain sentences in English describing the object as seen: what it is, materials, colours, notable details. No speculation about value. No marketing language."},
+            "description": {"type": "string", "description": "2 to 4 plain sentences in English describing the object as seen: what it is, materials, colours, notable details. If the object carries words (a poster headline, slogan, caption, label), say what they mean in English, quoting the original briefly with the English in brackets, e.g. Headline 'Bally Schuhe für jede Jahreszeit' (Bally shoes for every season). Never leave foreign words untranslated. No speculation about value. No marketing language."},
             "picture_type": {"type": "string", "enum": PICTURE},
             "themes": {"type": "array", "items": {"type": "string", "enum": THEMES}, "description": "Sports, activities or occasions the object is clearly made for or depicts. Use none if nothing clear."},
             "shoe_type": {"type": "string", "enum": SHOE},
@@ -58,19 +64,24 @@ TOOL = {
             "colours": {"type": "array", "items": {"type": "string"}, "description": "Main colours, lower case."},
             "details": {"type": "array", "items": {"type": "string"}, "description": "Visible construction or design details, lower case, e.g. perforated wingtip, buckle, tassel, fringe, block heel, lug sole, quilting."},
             "branding": {"type": "array", "items": {"type": "string", "enum": BRANDING}},
-            "visible_text": {"type": "string", "description": "Any text legible in the photos, transcribed exactly, separated by ' / '. Empty if none."},
+            "visible_text": {"type": "string", "description": "Any text legible in the photos, transcribed exactly in its original language, separated by ' / '. Empty if none."},
+            "text_language": {"type": "string", "description": "Language(s) of the visible text, e.g. German, French, Italian, English, or 'none'."},
+            "visible_text_en": {"type": "string", "description": "Full English translation of visible_text, same order, separated by ' / '. Brand names, model names and proper names stay as they are. Copy English text unchanged. Empty if there is no text."},
+            "wording_en": {"type": "string", "description": "English translation of the catalogue record's 'wording' field if it is not in English; copy it if already English; empty if the record has no wording."},
             "people": {"type": "boolean", "description": "True if people appear in the photos."},
             "era_guess": {"type": "string", "description": "Decade the design looks like, e.g. 1950s, or 'unclear'."},
             "conflicts": {"type": "array", "items": {"type": "string"}, "description": "Short notes where the photos clearly contradict the catalogue record (wrong category, wrong colour, wrong gender, photo of a different object). Empty if none."},
         },
-        "required": ["description", "picture_type", "themes", "materials", "colours", "details", "branding", "visible_text", "people", "era_guess", "conflicts"],
+        "required": ["description", "picture_type", "themes", "materials", "colours", "details", "branding", "visible_text", "text_language", "visible_text_en", "wording_en", "people", "era_guess", "conflicts"],
     },
 }
 
 SYSTEM = ("You catalogue the Bally heritage archive (Swiss shoes, bags, accessories, posters, advertising and "
           "photographs since 1851). Describe only what you can see. Use the catalogue record for context, but report "
           "clear contradictions in 'conflicts' rather than repeating the record. Pick shoe_type only for footwear and "
-          "bag_type only for bags and small leather goods; otherwise use not-a-shoe / not-a-bag.")
+          "bag_type only for bags and small leather goods; otherwise use not-a-shoe / not-a-bag. The readers are English "
+          "speakers: everything you write is in English, and every foreign word you report (German, French, Italian or "
+          "any other language) is translated, in the description, in visible_text_en and in wording_en.")
 
 
 def log(*a):
@@ -99,11 +110,11 @@ def store(row):
         time.sleep(3 * (i + 1))
 
 
-def image_block(path):
+def image_block(path, px=IMG_PX):
     r = requests.get(f"{SB_URL}/storage/v1/object/public/web/{path}", timeout=60)
     r.raise_for_status()
     im = Image.open(io.BytesIO(r.content)).convert("RGB")
-    im.thumbnail((IMG_PX, IMG_PX))
+    im.thumbnail((px, px))
     b = io.BytesIO()
     im.save(b, "JPEG", quality=85)
     return {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": base64.b64encode(b.getvalue()).decode()}}
@@ -118,9 +129,10 @@ def record_text(o):
 def one(o):
     photos = list(dict.fromkeys(o.get("photos") or []))[:3]
     try:
-        blocks = [image_block(p) for p in photos]
+        px = max(IMG_PX, TEXT_PX) if o.get("category") in TEXT_CATS else IMG_PX
+        blocks = [image_block(p, px) for p in photos]
         msg = client.messages.create(
-            model=MODEL, max_tokens=900, system=SYSTEM, tools=[TOOL], tool_choice={"type": "tool", "name": "record_object"},
+            model=MODEL, max_tokens=1600, system=SYSTEM, tools=[TOOL], tool_choice={"type": "tool", "name": "record_object"},
             messages=[{"role": "user", "content": blocks + [{"type": "text", "text": record_text(o)}]}])
         data = next(b.input for b in msg.content if b.type == "tool_use")
         store({"object_guid": o["guid"], "model": MODEL, "description": data.get("description"), "fields": data,
@@ -142,7 +154,10 @@ def main():
             want = WORKERS * 4 if not LIMIT else min(WORKERS * 4, LIMIT - done)
             if want <= 0:
                 break
-            batch = rpc("vision_batch", {"p_shard": SHARD, "p_shards": SHARDS, "p_limit": want})
+            if REDO:
+                batch = rpc("vision_redo_batch", {"p_categories": REDO, "p_shard": SHARD, "p_shards": SHARDS, "p_limit": want})
+            else:
+                batch = rpc("vision_batch", {"p_shard": SHARD, "p_shards": SHARDS, "p_limit": want})
             if not batch:
                 log("nothing left")
                 break

@@ -12,6 +12,9 @@ on:
       model:
         description: "Model id"
         default: "claude-haiku-5-5"
+      redo:
+        description: "Re-describe these categories (comma list, e.g. ADVERTISING,CORPORATE IDENTITY,NONE); empty = new objects only"
+        default: ""
 
 concurrency:
   group: describe
@@ -47,6 +50,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
           MODEL: ${{ inputs.model }}
+          REDO: ${{ inputs.redo }}
           LIMIT: ${{ inputs.limit }}
           SHARD: ${{ matrix.shard }}
           SHARDS: ${{ inputs.shards }}
