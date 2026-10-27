@@ -74,6 +74,9 @@ jobs:
         if: steps.q.outputs.work == '1'
         env: {WORKERS: "4"}
         run: python migrate/make_zoom.py
+      - name: Refresh AI descriptions on the site
+        if: steps.q.outputs.work == '1'
+        run: curl -sS -X POST "$SB/rest/v1/rpc/refresh_ai_profile" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}'
       - name: Refresh the catalogue bundle
         if: steps.q.outputs.work == '1'
         env: {GH_TOKEN: "${{ github.token }}"}
