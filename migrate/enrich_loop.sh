@@ -21,6 +21,7 @@ print(1 if isinstance(q,dict) and any(q.get(k,0) for k in ('pending_describe','p
     python migrate/tag.py
     WORKERS=4 python migrate/make_zoom.py
     curl -sS -X POST "$SB/rest/v1/rpc/refresh_ai_profile" "${H[@]}" -d '{}' >/dev/null
+    curl -sS -X POST "$SB/rest/v1/rpc/refresh_home_summary" "${H[@]}" -d '{}' >/dev/null
     gh workflow run catalog-bundle.yml -R "$GITHUB_REPOSITORY" -f force=1 || true
   fi
   sleep 120
