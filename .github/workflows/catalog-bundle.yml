@@ -23,6 +23,17 @@ jobs:
           curl -sS -X POST "$SB/rest/v1/rpc/refresh_home_summary" "${H[@]}" -d '{}' -o /dev/null -w " home=%{http_code}\n" || true
           V=$(curl -sS -X POST "$SB/rest/v1/rpc/catalog_version" "${H[@]}" -d '{}' | tr -d '"')
           NAME="catalog/bundle-$V.v2.json.gz"
+          # v3: small core file for the first screen + prose file loaded afterwards (built alongside v2 until the site switches)
+          for KIND in core prose; do
+            N3="catalog/$KIND-$V.v3.json.gz"
+            if [ "$FORCE" != "1" ] && curl -sfI "$SB/storage/v1/object/public/web/$N3" >/dev/null; then echo "$N3 exists"; continue; fi
+            curl -sS --fail-with-body -m 600 -X POST "$SB/rest/v1/rpc/catalog_${KIND}_json" "${H[@]}" -d '{}' -o $KIND.json
+            python3 -c "import json,sys;d=json.load(open(sys.argv[1]));json.dump(d,open(sys.argv[1],'w'),separators=(',',':'))" $KIND.json
+            gzip -9 -c $KIND.json > $KIND.json.gz; ls -l $KIND.json $KIND.json.gz
+            curl -sS --fail-with-body -X POST "$SB/storage/v1/object/web/$N3" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+              -H "Content-Type: application/gzip" -H "Cache-Control: max-age=31536000" -H "x-upsert: true" --data-binary @$KIND.json.gz
+            echo
+          done
           echo "version $V"
           if [ "$FORCE" != "1" ] && curl -sfI "$SB/storage/v1/object/public/web/$NAME" >/dev/null; then echo "exists"; exit 0; fi
           curl -sS --fail-with-body -m 600 -X POST "$SB/rest/v1/rpc/catalog_bundle_json" "${H[@]}" -d '{}' -o bundle.json
