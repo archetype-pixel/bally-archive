@@ -1,0 +1,41 @@
+name: Intake (bulk drive load)
+
+on:
+  workflow_dispatch:
+    inputs:
+      shards: {description: "Parallel shards (1, 4, 8 or 16)", default: "8"}
+
+concurrency:
+  group: intake-bulk
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.m.outputs.shards }}
+    steps:
+      - id: m
+        run: echo "shards=$(python3 -c 'import json,sys;print(json.dumps(list(range(int(sys.argv[1])))))' ${{ inputs.shards }})" >> "$GITHUB_OUTPUT"
+  intake:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install requests==2.32.3 Pillow==11.2.1 pillow-heif rawpy defusedxml open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - name: Intake shard ${{ matrix.shard }}
+        env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ inputs.shards }}
+          WORKERS: "4"
+          RUN_SECONDS: "20400"
+        run: python migrate/intake.py
