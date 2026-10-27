@@ -39,6 +39,8 @@ jobs:
         run: python -c "import open_clip; open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai'); open_clip.create_model_and_transforms('ViT-B-32', pretrained='laion2b_s34b_b79k')"
       - name: Watch and process
         run: bash migrate/enrich_loop.sh
-      - name: Restart the chain if the watcher failed
+      - name: Restart the chain if the watcher failed (after a 10 minute pause)
         if: failure()
-        run: gh workflow run enrich.yml -R "$GITHUB_REPOSITORY" || true
+        run: |
+          sleep 600
+          gh workflow run enrich.yml -R "$GITHUB_REPOSITORY" || true
