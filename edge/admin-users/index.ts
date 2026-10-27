@@ -1,5 +1,5 @@
 // admin-users: archive ADMINs manage staff accounts.
-// POST { action: 'list' }
+// POST { action: 'list' }   -> users[] (with last_email: latest delivery outcome) + problems[] (bounces/complaints, last 14 days)
 // POST { action: 'invite', email, name, role }      -> emails an invitation; the person sets their own password
 // POST { action: 'reset', email }                   -> emails a password reset link
 // POST { action: 'set_password', email, password }
@@ -59,9 +59,13 @@ Deno.serve(async (req) => {
       if (error) throw error;
       const { data: roles } = await admin.from("staff_roles").select("user_id, role, active");
       const { data: profiles } = await admin.from("archive_profiles").select("user_id, display_name");
+      const { data: mail } = await admin.from("email_status").select("email, event, reason, subject, occurred_at");
+      const mm = new Map((mail ?? []).map((m: any) => [m.email, m]));
+      const { data: recentBounces } = await admin.from("email_events").select("email, event, reason, subject, occurred_at").in("event", ["bounced", "complained", "failed", "suppressed"]).gte("occurred_at", new Date(Date.now() - 14 * 864e5).toISOString()).order("occurred_at", { ascending: false }).limit(20);
+      const known = new Set(data.users.map((x) => (x.email ?? "").toLowerCase()));
       const rm = new Map((roles ?? []).map((r: any) => [r.user_id, r]));
       const pm = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
-      return json({ users: data.users.map((x) => ({ user_id: x.id, email: x.email, display_name: pm.get(x.id) ?? null, confirmed: !!x.email_confirmed_at, invited_at: x.invited_at ?? null, last_sign_in_at: x.last_sign_in_at, created_at: x.created_at, role: rm.get(x.id)?.role ?? null, active: rm.get(x.id)?.active ?? false })) });
+      return json({ users: data.users.map((x) => ({ user_id: x.id, email: x.email, display_name: pm.get(x.id) ?? null, confirmed: !!x.email_confirmed_at, invited_at: x.invited_at ?? null, last_sign_in_at: x.last_sign_in_at, created_at: x.created_at, role: rm.get(x.id)?.role ?? null, active: rm.get(x.id)?.active ?? false, last_email: mm.get((x.email ?? "").toLowerCase()) ?? null })), problems: (recentBounces ?? []).filter((b: any) => known.has(String(b.email).toLowerCase())) });
     }
     if (!email.includes("@")) return json({ error: "Enter a valid email." }, 400);
 
