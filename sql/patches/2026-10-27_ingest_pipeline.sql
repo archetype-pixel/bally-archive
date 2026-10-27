@@ -1,3 +1,4 @@
+-- APPLIED 2026-10-27 05:30Z via execute_sql (section 1 superseded by 2026-10-27_ai_profile_refresh.sql; enrich_enqueue without the generated shard column; media_uploads.uploaded_by made nullable for intake)
 -- Ingest pipeline (2026-10-27): new photos from the upload page, the studio drop folder and the bulk drive
 -- are processed automatically (AI description, image fingerprints, tags, zoom) and unmatched files wait for review.
 
