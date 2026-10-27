@@ -1,10 +1,11 @@
-name: Process new files (intake, AI description, fingerprints, tags, zoom)
+name: Process new files (always-on watcher)
 
-# Runs every 20 minutes. Each step exits in seconds when there is nothing to do.
-# For the big drive load, run "Intake (bulk)" with 8 or 16 shards instead.
+# One run watches for ~5h20m, checking every 2 minutes for new uploads, intake files and missing
+# AI descriptions, fingerprints, tags or zoom images; then it starts the next run itself.
+# The schedule below is only a backstop that restarts the chain if it ever breaks.
 on:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "41 */2 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -16,70 +17,28 @@ permissions:
   contents: read
 
 jobs:
-  enrich:
+  watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 350
     env:
       SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      SB: https://glfiqywdzqcnrhpsjwwp.supabase.co
-      KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      RUN_SECONDS: "5400"
-      SHARD: "0"
-      SHARDS: "1"
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
+      MODEL: claude-haiku-5-5
+      TEXT_MODEL: claude-sonnet-5-5
+      GH_TOKEN: ${{ github.token }}
+      LOOP_SECONDS: "19200"
     steps:
-      - name: Check for work
-        id: q
-        run: |
-          set -euo pipefail
-          H=(-H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json")
-          N=$(curl -sS -X POST "$SB/rest/v1/rpc/intake_scan" "${H[@]}" -d '{}')
-          Q=$(curl -sS -X POST "$SB/rest/v1/rpc/enrich_enqueue" "${H[@]}" -d '{}')
-          echo "new intake files: $N  queue: $Q"
-          WORK=$(python3 -c "import json,sys;q=json.loads(sys.argv[1]);print(1 if any(q.get(k,0) for k in ('pending_describe','pending_embed','pending_tags','pending_zoom','pending_intake')) else 0)" "$Q")
-          echo "work=$WORK" >> "$GITHUB_OUTPUT"
-          echo "intake=$(python3 -c "import json,sys;print(json.loads(sys.argv[1]).get('pending_intake',0))" "$Q")" >> "$GITHUB_OUTPUT"
-      - if: steps.q.outputs.work == '1'
-        uses: actions/checkout@v4
-      - if: steps.q.outputs.work == '1'
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - if: steps.q.outputs.work == '1'
-        run: pip install requests==2.32.3 Pillow==11.2.1 pillow-heif rawpy defusedxml anthropic open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
-      - name: Intake (match new files to objects)
-        if: steps.q.outputs.work == '1' && steps.q.outputs.intake != '0'
-        env: {WORKERS: "4"}
-        run: python migrate/intake.py
-      - name: Queue what intake attached
-        if: steps.q.outputs.work == '1'
-        run: |
-          curl -sS -X POST "$SB/rest/v1/rpc/enrich_enqueue" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}'
-      - name: AI descriptions (with English translations)
-        if: steps.q.outputs.work == '1'
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
-          MODEL: claude-haiku-5-5
-          TEXT_MODEL: claude-sonnet-5-5
-          WORKERS: "4"
-          LIMIT: "0"
-        run: python migrate/describe.py
-      - name: Fingerprints for visual search
-        if: steps.q.outputs.work == '1'
-        run: python migrate/embed.py
-      - name: Tags
-        if: steps.q.outputs.work == '1'
-        run: python migrate/tag.py
-      - name: Zoom images
-        if: steps.q.outputs.work == '1'
-        env: {WORKERS: "4"}
-        run: python migrate/make_zoom.py
-      - name: Refresh AI descriptions on the site
-        if: steps.q.outputs.work == '1'
-        run: |
-          curl -sS -X POST "$SB/rest/v1/rpc/refresh_ai_profile" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" -d '{}'
-      - name: Refresh the catalogue bundle
-        if: steps.q.outputs.work == '1'
-        env: {GH_TOKEN: "${{ github.token }}"}
-        run: gh workflow run catalog-bundle.yml -R "${{ github.repository }}" -f force=1 || true
+      - run: pip install requests==2.32.3 Pillow==11.2.1 pillow-heif rawpy defusedxml anthropic open_clip_torch==2.26.1 torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - name: Pre-load the image model
+        run: python -c "import open_clip; open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai'); open_clip.create_model_and_transforms('ViT-B-32', pretrained='laion2b_s34b_b79k')"
+      - name: Watch and process
+        run: bash migrate/enrich_loop.sh
+      - name: Restart the chain if the watcher failed
+        if: failure()
+        run: gh workflow run enrich.yml -R "$GITHUB_REPOSITORY" || true
