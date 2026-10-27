@@ -12,6 +12,9 @@ on:
       model:
         description: "Model id"
         default: "claude-haiku-5-5"
+      text_model:
+        description: "Model for posters, ads, documents, photos (empty = same as model)"
+        default: "claude-sonnet-5-5"
       redo:
         description: "Re-describe these categories (comma list, e.g. ADVERTISING,CORPORATE IDENTITY,NONE); empty = new objects only"
         default: ""
@@ -51,6 +54,7 @@ jobs:
           ANTHROPIC_WORKSPACE_ID: wrkspc_01XqRumCyjrtr4FBbThq4igk
           MODEL: ${{ inputs.model }}
           REDO: ${{ inputs.redo }}
+          TEXT_MODEL: ${{ inputs.text_model }}
           LIMIT: ${{ inputs.limit }}
           SHARD: ${{ matrix.shard }}
           SHARDS: ${{ inputs.shards }}

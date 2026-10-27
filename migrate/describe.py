@@ -22,6 +22,7 @@ from PIL import Image
 SB_URL = os.environ["SUPABASE_URL"].rstrip("/")
 SB_KEY = os.environ["SUPABASE_SERVICE_KEY"]
 MODEL = os.environ.get("MODEL", "claude-haiku-5-5")
+TEXT_MODEL = os.environ.get("TEXT_MODEL", "") or MODEL  # stronger model for posters, ads and documents
 SHARD = int(os.environ.get("SHARD", "0"))
 SHARDS = int(os.environ.get("SHARDS", "1"))
 LIMIT = int(os.environ.get("LIMIT", "0"))  # 0 = no limit
@@ -66,8 +67,8 @@ TOOL = {
             "branding": {"type": "array", "items": {"type": "string", "enum": BRANDING}},
             "visible_text": {"type": "string", "description": "Any text legible in the photos, transcribed exactly in its original language, separated by ' / '. Empty if none."},
             "text_language": {"type": "string", "description": "Language(s) of the visible text, e.g. German, French, Italian, English, or 'none'."},
-            "visible_text_en": {"type": "string", "description": "Full English translation of visible_text, same order, separated by ' / '. Brand names, model names and proper names stay as they are. Copy English text unchanged. Empty if there is no text."},
-            "wording_en": {"type": "string", "description": "English translation of the catalogue record's 'wording' field if it is not in English; copy it if already English; empty if the record has no wording."},
+            "visible_text_en": {"type": "string", "description": "Full English translation of visible_text, same order, separated by ' / ', written as natural English a native speaker would say (e.g. 'CHAUSSURES BALLY' becomes 'BALLY SHOES', not 'SHOES BALLY'). Brand names, model names and proper names stay as they are. Copy English text unchanged. Empty if there is no text."},
+            "wording_en": {"type": "string", "description": "English translation of the catalogue record's 'wording' field, in natural English. Always translate every non-English word (e.g. 'K Chaussures Bally' becomes 'K Bally Shoes'). Copy it only if it is already entirely English; empty if the record has no wording."},
             "people": {"type": "boolean", "description": "True if people appear in the photos."},
             "era_guess": {"type": "string", "description": "Decade the design looks like, e.g. 1950s, or 'unclear'."},
             "conflicts": {"type": "array", "items": {"type": "string"}, "description": "Short notes where the photos clearly contradict the catalogue record (wrong category, wrong colour, wrong gender, photo of a different object). Empty if none."},
@@ -131,11 +132,12 @@ def one(o):
     try:
         px = max(IMG_PX, TEXT_PX) if o.get("category") in TEXT_CATS else IMG_PX
         blocks = [image_block(p, px) for p in photos]
+        model = TEXT_MODEL if o.get("category") in TEXT_CATS else MODEL
         msg = client.messages.create(
-            model=MODEL, max_tokens=1600, system=SYSTEM, tools=[TOOL], tool_choice={"type": "tool", "name": "record_object"},
+            model=model, max_tokens=1600, system=SYSTEM, tools=[TOOL], tool_choice={"type": "tool", "name": "record_object"},
             messages=[{"role": "user", "content": blocks + [{"type": "text", "text": record_text(o)}]}])
         data = next(b.input for b in msg.content if b.type == "tool_use")
-        store({"object_guid": o["guid"], "model": MODEL, "description": data.get("description"), "fields": data,
+        store({"object_guid": o["guid"], "model": model, "description": data.get("description"), "fields": data,
                "photos_used": photos, "input_tokens": msg.usage.input_tokens, "output_tokens": msg.usage.output_tokens,
                "status": "done", "error": None})
         return msg.usage.input_tokens, msg.usage.output_tokens, None
