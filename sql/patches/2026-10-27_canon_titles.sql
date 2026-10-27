@@ -1,0 +1,7 @@
+-- APPLIED 2026-10-27 14:58Z. Card and page titles come ONLY from catalogue (canon) fields, never AI.
+-- Order: model_name > description (except "Boxes ..." storage notes) > "Poster by <author>" > "<wording>" (non-shoes)
+--        > subcategory > category. New column title_source says which field was used.
+-- Before: shoes/bags without a model name showed an AI colour+type label ("Gold pump") ahead of the catalogue description.
+-- Counts (17,233): model name 4,276; description only 6,127; wording only 945; no name field 5,885 (shown as subcategory).
+-- Also: catalog_epoch table, included in catalog_version(), so a title-rule change produces a new catalogue file
+-- and browsers stop serving the old cached one. Bump with: update catalog_epoch set bumped_at = now(), note = '...';
