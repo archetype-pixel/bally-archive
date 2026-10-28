@@ -5,6 +5,9 @@
 // POST { action: 'set_password', email, password }
 // POST { action: 'create', email, password, role, name? }
 // POST { action: 'set_role', email, role, active }
+// POST { action: 'requests' }                      -> access requests (self sign-ups waiting for approval)
+// POST { action: 'approve', user_id, role }         -> grants access, emails the person
+// POST { action: 'decline', user_id }
 // Caller must be signed in with an active 'admin' row in staff_roles. Passwords are never stored or logged here.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
@@ -51,6 +54,7 @@ Deno.serve(async (req) => {
     if (active) await admin.from("archive_staff").upsert({ user_id: id });
     else await admin.from("archive_staff").delete().eq("user_id", id);
     if (name) await admin.from("archive_profiles").upsert({ user_id: id, display_name: name, updated_at: new Date().toISOString() });
+    if (active) await admin.from("access_requests").update({ status: "approved", role_granted: role, decided_by: u.user.id, decided_at: new Date().toISOString() }).eq("user_id", id).eq("status", "pending");
   };
 
   try {
@@ -66,6 +70,29 @@ Deno.serve(async (req) => {
       const rm = new Map((roles ?? []).map((r: any) => [r.user_id, r]));
       const pm = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
       return json({ users: data.users.map((x) => ({ user_id: x.id, email: x.email, display_name: pm.get(x.id) ?? null, confirmed: !!x.email_confirmed_at, invited_at: x.invited_at ?? null, last_sign_in_at: x.last_sign_in_at, created_at: x.created_at, role: rm.get(x.id)?.role ?? null, active: rm.get(x.id)?.active ?? false, last_email: mm.get((x.email ?? "").toLowerCase()) ?? null })), problems: (recentBounces ?? []).filter((b: any) => known.has(String(b.email).toLowerCase())) });
+    }
+    if (action === "requests") {
+      const { data, error } = await admin.from("access_requests").select("user_id, email, display_name, organisation, reason, status, role_granted, decided_at, created_at").order("created_at", { ascending: false }).limit(500);
+      if (error) throw error;
+      return json({ requests: data ?? [] });
+    }
+    if (action === "approve" || action === "decline") {
+      const uid = String(body.user_id ?? "");
+      const { data: rq } = await admin.from("access_requests").select("user_id, email, display_name").eq("user_id", uid).maybeSingle();
+      if (!rq) return json({ error: "No such request." }, 404);
+      if (action === "decline") {
+        await admin.from("access_requests").update({ status: "declined", decided_by: u.user.id, decided_at: new Date().toISOString() }).eq("user_id", uid);
+        return json({ ok: true });
+      }
+      const role = ROLES.includes(body.role) ? body.role : "viewer";
+      const { error: gErr } = await admin.from("staff_roles").upsert({ user_id: uid, role, active: true, updated_at: new Date().toISOString() });
+      if (gErr) throw gErr;
+      await admin.from("archive_staff").upsert({ user_id: uid });
+      if (rq.display_name) await admin.from("archive_profiles").upsert({ user_id: uid, display_name: rq.display_name, updated_at: new Date().toISOString() });
+      await admin.from("access_requests").update({ status: "approved", role_granted: role, decided_by: u.user.id, decided_at: new Date().toISOString() }).eq("user_id", uid);
+      // Let them know: a sign-in link to the archive (magic link via the configured Resend sender).
+      const { error: mErr } = await userDb.auth.signInWithOtp({ email: rq.email, options: { shouldCreateUser: false, emailRedirectTo: `${site}/` } });
+      return json({ ok: true, role, emailed: !mErr, email_error: mErr?.message ?? null });
     }
     if (!email.includes("@")) return json({ error: "Enter a valid email." }, 400);
 
