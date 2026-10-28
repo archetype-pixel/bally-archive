@@ -1,0 +1,5 @@
+-- vision_batch: skip hidden (wrongly linked) files, use a main_asset override that lives on another record,
+-- and accept uploads whose display is a JPG cover (documents, films), excluding 'master' duplicates.
+-- 162 AI descriptions written when the object had no picture were backed up to ai_descriptions_backup_20261028
+-- and set back to pending so the describe job rewrites them. Previous def: function_backups 'vision_batch@2026-10-28'.
+-- media_fix_log(asset_guid, how, fixed_at): which catalogued files were made usable on 2026-10-28; feeds recent_files().
