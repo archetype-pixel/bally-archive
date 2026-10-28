@@ -1,0 +1,8 @@
+-- 2026-10-28 (applied):
+-- object_same_as(object_guid, same_as_guid, note): duplicate records that were photographed under another record.
+--   SHOO0008312 -> SHOO0000091, SHOO0008311 -> SHOO0000192, SHOO0008279 -> SHOO0000101. object_page() now includes the
+--   same_as object's files and 360, plus a 'same_as' field; main_asset_guid overrides give them a catalogue picture.
+--   Previous object_page def: function_backups 'object_page@2026-10-28b'.
+-- SHOO0006520: empty exported file hidden (object_asset_hidden), camera original attached as a media upload.
+-- 167 uncatalogued Azure photos -> object_additions PHOO2736-2884, ADVO0135-0144, POSO0974-0981 with media_uploads;
+--   staging and code assignment in orphan_stage_20261028; details copied from neighbouring records in the same folder.
