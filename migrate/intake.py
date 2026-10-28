@@ -77,7 +77,7 @@ def patch(path, row):
 
 def put(bucket, key, data, ctype):
     r = requests.post(f"{SB_URL}/storage/v1/object/{bucket}/{key}", data=data, timeout=900,
-                      headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": ctype, "x-upsert": "true"})
+                      headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}", "Content-Type": ctype, "x-upsert": "true", "cache-control": "max-age=604800"})
     if r.status_code not in (200, 201):
         raise RuntimeError(f"upload {bucket}/{key}: {r.status_code} {r.text[:120]}")
 

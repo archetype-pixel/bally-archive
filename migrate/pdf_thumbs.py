@@ -22,7 +22,7 @@ def rows():
 
 def put(key, data):
     r = requests.post(f"{SB}/storage/v1/object/web/{key}", data=data, timeout=300,
-                      headers={**H, "Content-Type": "image/jpeg", "x-upsert": "true"})
+                      headers={**H, "Content-Type": "image/jpeg", "x-upsert": "true", "cache-control": "max-age=604800"})
     if r.status_code not in (200, 201):
         raise RuntimeError(f"{key}: {r.status_code} {r.text[:120]}")
 
