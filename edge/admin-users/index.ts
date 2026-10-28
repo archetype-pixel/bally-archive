@@ -64,17 +64,19 @@ Deno.serve(async (req) => {
       const { data: roles } = await admin.from("staff_roles").select("user_id, role, active");
       const { data: profiles } = await admin.from("archive_profiles").select("user_id, display_name");
       const { data: mail } = await admin.from("email_status").select("email, event, reason, subject, occurred_at");
-      const mm = new Map((mail ?? []).map((m: any) => [m.email, m]));
+      const EV = ["delivered", "bounced", "complained", "delivery_delayed", "suppressed", "failed"];
+      const okMail = (m: any) => m && EV.includes(m.event) && typeof m.email === "string" && typeof m.occurred_at === "string";
+      const mm = new Map((mail ?? []).filter(okMail).map((m: any) => [String(m.email).toLowerCase(), m]));
       const { data: recentBounces } = await admin.from("email_events").select("email, event, reason, subject, occurred_at").in("event", ["bounced", "complained", "failed", "suppressed"]).gte("occurred_at", new Date(Date.now() - 14 * 864e5).toISOString()).order("occurred_at", { ascending: false }).limit(20);
       const known = new Set(data.users.map((x) => (x.email ?? "").toLowerCase()));
       const rm = new Map((roles ?? []).map((r: any) => [r.user_id, r]));
       const pm = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
-      return json({ users: data.users.map((x) => ({ user_id: x.id, email: x.email, display_name: pm.get(x.id) ?? null, confirmed: !!x.email_confirmed_at, invited_at: x.invited_at ?? null, last_sign_in_at: x.last_sign_in_at, created_at: x.created_at, role: rm.get(x.id)?.role ?? null, active: rm.get(x.id)?.active ?? false, last_email: mm.get((x.email ?? "").toLowerCase()) ?? null })), problems: (recentBounces ?? []).filter((b: any) => known.has(String(b.email).toLowerCase())) });
+      return json({ users: data.users.map((x) => ({ user_id: x.id, email: x.email ?? "", display_name: pm.get(x.id) ?? null, confirmed: !!x.email_confirmed_at, invited_at: x.invited_at ?? null, last_sign_in_at: x.last_sign_in_at ?? null, created_at: x.created_at ?? new Date(0).toISOString(), role: ROLES.includes(rm.get(x.id)?.role) ? rm.get(x.id).role : null, active: rm.get(x.id)?.active ?? false, last_email: mm.get((x.email ?? "").toLowerCase()) ?? null })), problems: (recentBounces ?? []).filter(okMail).filter((b: any) => known.has(String(b.email).toLowerCase())) });
     }
     if (action === "requests") {
       const { data, error } = await admin.from("access_requests").select("user_id, email, display_name, organisation, reason, status, role_granted, decided_at, created_at").order("created_at", { ascending: false }).limit(500);
       if (error) throw error;
-      return json({ requests: data ?? [] });
+      return json({ requests: (data ?? []).map((r: any) => ({ ...r, email: r.email ?? "", display_name: r.display_name ?? null, organisation: r.organisation ?? null, reason: r.reason ?? null, status: r.status ?? "pending", created_at: r.created_at ?? new Date(0).toISOString() })) });
     }
     if (action === "approve" || action === "decline") {
       const uid = String(body.user_id ?? "");
