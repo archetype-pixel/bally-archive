@@ -90,6 +90,9 @@ Deno.serve(async (req) => {
       const role = ROLES.includes(body.role) ? body.role : "viewer";
       const { error: gErr } = await admin.from("staff_roles").upsert({ user_id: uid, role, active: true, updated_at: new Date().toISOString() });
       if (gErr) throw gErr;
+      // Approval also confirms the email, so the password they chose at sign-up works straight away.
+      const { error: cErr } = await admin.auth.admin.updateUserById(uid, { email_confirm: true });
+      if (cErr) throw cErr;
       await admin.from("archive_staff").upsert({ user_id: uid });
       if (rq.display_name) await admin.from("archive_profiles").upsert({ user_id: uid, display_name: rq.display_name, updated_at: new Date().toISOString() });
       await admin.from("access_requests").update({ status: "approved", role_granted: role, decided_by: u.user.id, decided_at: new Date().toISOString() }).eq("user_id", uid);
