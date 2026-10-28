@@ -1,0 +1,24 @@
+name: Web pictures for files that have none, then rebuild catalogue bundle
+
+on:
+  workflow_dispatch:
+
+env:
+  SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+
+jobs:
+  renditions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq libvips-tools imagemagick ffmpeg >/dev/null && pip install requests==2.32.3
+      - name: Relax ImageMagick limits for very large scans
+        run: sudo sed -i -E '/name="(memory|map|area|disk|width|height)"/d' /etc/ImageMagick-6/policy.xml || true
+      - name: Render missing pictures
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python migrate/missing_renditions.py
