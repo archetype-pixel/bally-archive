@@ -19,6 +19,7 @@ jobs:
         run: |
           set -euo pipefail
           H=(-H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: application/json")
+          curl -sS -X POST "$SB/rest/v1/rpc/refresh_catalog_media" "${H[@]}" -d '{}' -w " media=%{http_code}\n" || true
           curl -sS -X POST "$SB/rest/v1/rpc/refresh_object_search" "${H[@]}" -d '{}' -w " refresh=%{http_code}\n" || true
           curl -sS -X POST "$SB/rest/v1/rpc/refresh_object_colours" "${H[@]}" -d '{}' -o /dev/null -w " colours=%{http_code}\n" || true
           curl -sS -X POST "$SB/rest/v1/rpc/refresh_home_summary" "${H[@]}" -d '{}' -o /dev/null -w " home=%{http_code}\n" || true
