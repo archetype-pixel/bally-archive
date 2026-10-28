@@ -1,0 +1,33 @@
+name: 360 framing boxes
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: spin-bbox
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+
+jobs:
+  spins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests==2.32.3 Pillow==11.2.1 numpy
+      - name: Spin boxes (shard ${{ matrix.shard }} of 16)
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: "16"
+          RUN_SECONDS: "6600"
+        run: python migrate/spin_bbox.py
