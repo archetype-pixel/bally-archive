@@ -1,0 +1,38 @@
+name: Add browser cache headers to web images
+
+on:
+  workflow_dispatch:
+    inputs:
+      prefix: {description: "Folder in the web bucket (thumb/, display/, zoom/ ...)", default: "thumb/"}
+      shards: {description: "Parallel shards", default: "8"}
+      max_age: {description: "Cache seconds", default: "604800"}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.m.outputs.shards }}
+    steps:
+      - id: m
+        run: echo "shards=$(python3 -c 'import json,sys;print(json.dumps(list(range(int(sys.argv[1])))))' ${{ inputs.shards }})" >> "$GITHUB_OUTPUT"
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install requests==2.32.3
+      - env:
+          SUPABASE_URL: https://glfiqywdzqcnrhpsjwwp.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          PREFIX: ${{ inputs.prefix }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ inputs.shards }}
+          MAX_AGE: ${{ inputs.max_age }}
+        run: python migrate/cache_headers.py
