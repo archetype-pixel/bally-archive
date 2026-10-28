@@ -1,0 +1,4 @@
+-- recent_files(p_since, p_limit): staff list of files added or made usable recently, for the /new-files page.
+-- Sources: media_uploads (uploads, Azure attachments, image-matched masters) and file_copy rows touched since p_since
+-- (PDF covers, re-rendered scans, film stills; file_copy.updated_at was set for the 2026-10-28 fixes).
+-- Definition as applied is in the database; see function_backups if changed later.
