@@ -8,6 +8,7 @@
 // POST { action: 'requests' }                      -> access requests (self sign-ups waiting for approval)
 // POST { action: 'approve', user_id, role }         -> grants access, emails the person
 // POST { action: 'decline', user_id }
+// POST { action: 'update_profile', user_id, name?, new_email? } -> edits the display name and/or sign-in email
 // Caller must be signed in with an active 'admin' row in staff_roles. Passwords are never stored or logged here.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
@@ -95,6 +96,35 @@ Deno.serve(async (req) => {
       // Let them know: a sign-in link to the archive (magic link via the configured Resend sender).
       const { error: mErr } = await userDb.auth.signInWithOtp({ email: rq.email, options: { shouldCreateUser: false, emailRedirectTo: `${site}/` } });
       return json({ ok: true, role, emailed: !mErr, email_error: mErr?.message ?? null });
+    }
+    if (action === "update_profile") {
+      const uid = String(body.user_id ?? "");
+      const { data: got, error: gErr } = await admin.auth.admin.getUserById(uid);
+      if (gErr || !got?.user) return json({ error: "No such account." }, 404);
+      const out: Record<string, unknown> = { ok: true, user_id: uid };
+      if (typeof body.name === "string") {
+        const dn = body.name.trim().slice(0, 120);
+        const { error } = await admin.from("archive_profiles").upsert({ user_id: uid, display_name: dn || null, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        await admin.auth.admin.updateUserById(uid, { user_metadata: { ...(got.user.user_metadata ?? {}), display_name: dn || null } });
+        await admin.from("access_requests").update({ display_name: dn || null }).eq("user_id", uid);
+        out.display_name = dn || null;
+      }
+      const ne = String(body.new_email ?? "").trim().toLowerCase();
+      if (ne && ne !== (got.user.email ?? "").toLowerCase()) {
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(ne)) return json({ error: "Enter a valid email." }, 400);
+        for (let page = 1; page <= 20; page++) {
+          const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+          if (error) throw error;
+          if (data.users.some((x) => x.id !== uid && (x.email ?? "").toLowerCase() === ne)) return json({ error: "Another account already uses that email." }, 409);
+          if (data.users.length < 200) break;
+        }
+        const { error } = await admin.auth.admin.updateUserById(uid, { email: ne, email_confirm: true });
+        if (error) return json({ error: `The email could not be changed: ${error.message}` }, 400);
+        await admin.from("access_requests").update({ email: ne }).eq("user_id", uid);
+        out.email = ne;
+      }
+      return json(out);
     }
     if (!email.includes("@")) return json({ error: "Enter a valid email." }, 400);
 
