@@ -1,0 +1,4 @@
+-- 2026-10-28 (applied): object pages took ~3.4 s for signed-in users because row-level security called archive_tier()
+-- once per row. All SELECT policies "(archive_tier() IS NOT NULL)" rewritten to "((select archive_tier()) is not null)"
+-- (19 policies), and object_overrides read policy uses (select is_archive_editor()). object_page now ~0.25 s.
+-- Also: web bucket thumb/ and display/ re-saved with Cache-Control max-age=604800 (migrate/cache_headers.py).
