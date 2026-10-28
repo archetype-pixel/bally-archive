@@ -4,7 +4,7 @@ or very large TIFF scans, plus a film). Writes display/<GUID>.jpg (1600px) and t
 Originals are untouched. Tries libvips first (handles CMYK, 16-bit, huge files), then ImageMagick.
 Films get a still frame from ffmpeg. Env: SUPABASE_URL, SUPABASE_SERVICE_KEY
 """
-import os, subprocess, tempfile
+import os, subprocess, tempfile, urllib.parse
 import requests
 
 SB = os.environ["SUPABASE_URL"].rstrip("/")
@@ -15,8 +15,8 @@ VIDEO = (".m4v", ".mp4", ".mov")
 
 def rows():
     r = requests.get(f"{SB}/rest/v1/file_copy", headers=H, timeout=60, params={
-        "select": "asset_id,guid,dest_original", "status": "eq.copied", "dest_display": "is.null",
-        "dest_original": "not.ilike.*.pdf"})
+        "select": "asset_id,guid,dest_original,azure_path", "status": "eq.copied", "dest_display": "is.null",
+        "dest_original": "not.ilike.*.pdf", "or": "(error.is.null,error.like.rendition:*)"})
     r.raise_for_status()
     return r.json()
 
@@ -69,6 +69,13 @@ def main():
                     with open(src, "wb") as f:
                         for chunk in r.iter_content(1 << 20):
                             f.write(chunk)
+                if os.path.getsize(src) == 0 and "2. PostProcessed" in (rec.get("azure_path") or ""):
+                    # The post-processed export is empty at source; the camera original sits beside it.
+                    alt = "azure-mirror/" + rec["azure_path"].replace("2. PostProcessed", "1. Originali")
+                    with requests.get(f"{SB}/storage/v1/object/archive/{urllib.parse.quote(alt)}", headers=H, timeout=900) as r:
+                        r.raise_for_status()
+                        open(src, "wb").write(r.content)
+                    print("used camera original", alt, flush=True)
                 if src.endswith(VIDEO):
                     still = os.path.join(d, "still.png")
                     try:
