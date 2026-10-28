@@ -2,3 +2,4 @@
 -- library_plates.credit_display / caption_en_display: '<name> (now Aare, LLC / C.F. Bally AG)'; caption_de_display: '(heute Aare, LLC / C.F. Bally AG)'.
 -- 272 plates covered (269 credits, 44 English captions, plus German captions).
 -- object_page().originals now includes copyright_original (site shows "<copyright>, successor to Bally Schuhfabriken AG"). Backup: object_page@2026-10-28c.
+-- Also required: grant select (copyright_original) on public.objects to authenticated;  (object_page is security invoker; without it object pages failed 2026-10-28 ~06:50-07:00 PT)
