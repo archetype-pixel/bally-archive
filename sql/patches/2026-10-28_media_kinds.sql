@@ -1,0 +1,3 @@
+-- media_kinds(): objects holding a document (PDF) or film (m4v/mp4/mov), incl. uploads and swapped main files, for the
+-- Collection "Has" filter. Returns only document/video holders (~40 rows) because the API caps responses at 1,000 rows;
+-- "Has photos" is computed by the site from the catalogue picture. Readable by any active staff_roles tier.
