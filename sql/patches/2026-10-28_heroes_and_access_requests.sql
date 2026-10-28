@@ -1,0 +1,7 @@
+-- 2026-10-28 (applied):
+-- home_heroes(object_code, sort, active): 26 Bally icon shoes (men's and women's) for the rotating home hero;
+--   refresh_home_summary() adds 'heroes' [{object_code, gender, model, subcategory, year, display, bb}]. Backup: function_backups 'refresh_home_summary@2026-10-28'.
+-- access_requests(user_id, email, display_name, organisation, reason, status pending/approved/declined, role_granted, decided_by, decided_at):
+--   trigger zz_access_request on auth.users inserts a pending request for every self sign-up (not invited users).
+--   my_access_status() for the waiting page; staff_home_counts() adds access_requests for admins.
+--   admin-users edge function v4: actions requests / approve / decline (approve grants role and emails a sign-in link).
